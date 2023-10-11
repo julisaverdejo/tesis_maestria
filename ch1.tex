@@ -1,0 +1,21 @@
+\chapter{Introducción}
+
+    Los números aleatorios se utilizan en muchos ámbitos de la vida cotidiana. Se utilizan para elegir quién gana la lotería, para determinar quién ataca primero en un partido de fútbol, para garantizar una partida justa en juegos de mesa y desempeñan un papel fundamental en la criptografía y la seguridad de la información. Para seleccionar al equipo atacante en un partido de fútbol, basta con lanzar una moneda. Sin embargo, para jugar a un juego de mesa se requieren más de dos valores aleatorios, por lo que se utiliza un dado. En cambio, la criptografía requiere algo más que tirar un dado para asegurar la protección de los datos en comunicaciones digitales o en transacciones bancarias. La seguridad de las comunicaciones es una parte fundamental de la vida moderna, en la que las personas envían correos electrónicos, realizan llamadas o envían mensajes a sus amigos y realiza transacciones en línea millones de veces al día. La sociedad confía que cada uno de estos procesos cotidianos sean seguros y confidenciales. La seguridad de las comunicaciones dependen de la capacidad de estos procesos para verificar la identidad de las personas que se comunican. La única forma de garantizar la seguridad es mediante la distribución de identidades privadas conocidas solo por el usuario, denominadas claves. Las claves privadas son números aleatorios únicos generados para cada usuario, que aseguran que personas malintencionadas no puedan suplantar a nadie y causar daño. La aleatoriedad de los números de las claves privadas es crucial para garantizar la seguridad de las conexiones. La capacidad de generar números aleatorios es, por tanto, una parte muy importante de la seguridad de los sistemas de comunicación.
+
+
+    \section{Objetivos}
+	
+		\subsection{Objetivo general}
+			\begin{itemize}
+				\item Diseñar e implementar en FPGA un TRNG híbrido para la generación de secuencias muy largas.
+			\end{itemize}
+		
+		\subsection{Objetivos específicos}
+			\begin{itemize}
+                \item Investigar el estado del arte de diferentes generadores de números aleatorios.
+                \item Estudiar los diferentes tipos de generadores de números aleatorios y analizar sus características principales.
+                \item Estudiar la teoría de los mapas caóticos y su utilidad en generadores de números aleatorios.
+                \item Diseñar un generador de números aleatorios híbrido utilizando un TRNG como generador de semillas y un mapa caótico para realizar un postprocesamiento que mejore sus características estadísticas y comprobar estas utilizando las pruebas NIST.
+                \item Implementar el TRNG híbrido en una FPGA.
+                %\item Utilizar las pruebas NIST para comprobar sus característica estadísticas.
+			\end{itemize}

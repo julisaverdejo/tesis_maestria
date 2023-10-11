@@ -4,6 +4,7 @@ bibliografia/
 excalidraw/
 
 ## Core latex/pdflatex auxiliary files:
+*.txt
 *.aux
 *.lof
 *.log
