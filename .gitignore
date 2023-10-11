@@ -1,3 +1,8 @@
+## Ignore folders
+.obsidian/
+bibliografia/
+excalidraw/
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
