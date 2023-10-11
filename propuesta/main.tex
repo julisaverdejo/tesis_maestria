@@ -1,0 +1,31 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{makeidx}
+\usepackage{graphicx}
+\usepackage{lmodern}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\author{Julisa Verdejo Palacios}
+\title{Instrumentación de un arreglo de microbolómetros de 120x160}
+\begin{document}
+
+\maketitle
+
+
+Un microbolómetro es un sensor compuesto por celdas utilizado para detectar radiación infrarroja y convertirla en señales eléctricas medibles. Está diseñado para operar sin la necesidad de ser refrigerado a temperaturas extremadamente bajas, esto reduce significativamente su tamaño, costo y consumo de energía, por lo tanto, lo hace adecuado para una amplia gama de aplicaciones, como la imagen térmica. 
+En este trabajo se generará una imagen térmica utilizando un arreglo de microbolómetros de 120x160, el cual se encontrará dentro de un contenedor al vacío. Para lograrlo, primero se diseñarán drivers SPI, RS232 e I2C en FPGA para realizar sistemas de adquisición de datos de temperatura, corriente y voltaje, después se hará la caracterización térmica del contenedor al vacío emulando condiciones de funcionamiento real, posteriormente se caracterizará y definirá la polarización de cada celda del microbolómetro, utilizando un diseño digital para poder seleccionar cada celda individualmente (multiplexor), variar el voltaje de polarización (DAC) y medir su curva característica. Además, se diseñará el algoritmo de funcionamiento de microbolómetro para finalmente generar una imagen térmica.
+
+
+
+\begin{thebibliography}{2}
+  \bibitem{texbook}
+ J. Hernandez et al.,``An Automated V-I Acquisition System for Microbolometer Array with FPGA-based Drive", 2021 IEEE International Instrumentation and Measurement Technology Conference (I2MTC), Glasgow, United Kingdom, 2021, pp. 1-6, doi: 10.1109/I2MTC50364.2021.9459964.
+
+  \bibitem{lamport94}
+M. Moreno et al., ``Towards an infrared camera based on polymorphous silicon-germanium microbolometer arrays," 2022 IEEE Latin American Electron Devices Conference (LAEDC), Cancun, Mexico, 2022, pp. 1-4, doi: 10.1109/LAEDC54796.2022.9908199.
+\end{thebibliography}
+
+\end{document}
