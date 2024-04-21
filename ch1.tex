@@ -2,29 +2,30 @@
 
 	\section{Estado del arte}
 	
-	Una de las fundamentales a entender cuando se habla de detectores infrarojos es que \cite{Rogalski2020} (pag 34)
+	Los microbolomeetros son bonitos y \cite{Hernandez2021}
 	
-	Una de las fundamentales a entender cuando se habla de detectores infrarojos es que \cite{Rogalski2020} (pag 60)
+	Porque los sistemas de adquisión de datos son tan importantes en la ciencia
+	Cuales son las dificultades de realizar uno (depende de las especificaciones, el tiempo y el capital humano)
+	Historia de los sistemas de adquisión de datos
+	Ejemplos de sistemas de adquisión de datos
+	Aplicaciones de sistemas de adquisión de datos
+	Puedes enfocarlo al microbolometro o en general
 	
-	Esta es otra cita \cite{He2000}	
-	
-	
-    \lipsum[1-3]
 
 
     \section{Objetivos}
 	
 		\subsection{Objetivo general}
 			\begin{itemize}
-				\item Diseñar e implementar en FPGA un TRNG híbrido para la generación de secuencias muy largas.
+				\item Diseño de un sistema de adquisición de datos basado en FPGA para la medición de una matriz de pixeles de un microbolómetro.
 			\end{itemize}
 		
 		\subsection{Objetivos específicos}
 			\begin{itemize}
-                \item Investigar el estado del arte de diferentes generadores de números aleatorios.
-                \item Estudiar los diferentes tipos de generadores de números aleatorios y analizar sus características principales.
-                \item Estudiar la teoría de los mapas caóticos y su utilidad en generadores de números aleatorios.
-                \item Diseñar un generador de números aleatorios híbrido utilizando un TRNG como generador de semillas y un mapa caótico para realizar un postprocesamiento que mejore sus características estadísticas y comprobar estas utilizando las pruebas NIST.
-                \item Implementar el TRNG híbrido en una FPGA.
-                %\item Utilizar las pruebas NIST para comprobar sus característica estadísticas.
+                \item Obtención de especificaciones para el sistema de adquisición de datos.
+                \item Selección de ADC y DAC y protocolo de comunicación a partir de las especificaciones.
+                \item Diseño de un firmware en el lenguaje de descripción de hardware (HDL) Verilog para el protocolo de comunicación SPI reconfigurable y robusto.
+                \item Implementación de protocolo SPI para control de un ADC y un DAC de 12 bits.
+                \item Pruebas experimentales y de estrés para verificación de robustes del diseño y mejora.
+                \item Adquisición de los datos utilizando una terminal de usuario basada en UART.
 			\end{itemize}
