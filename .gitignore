@@ -4,6 +4,9 @@ bibliografia/
 bibliografia2/
 excalidraw/
 
+## Ignore files
+main.pdf
+
 ## Core latex/pdflatex auxiliary files:
 *.txt
 *.aux
