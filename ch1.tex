@@ -1,7 +1,7 @@
 \chapter{Introducción}
 
 
-	Los microbolomeetros son bonitos y \cite{Hernandez2021}
+	Los microbolomeetros son bonitos y 
 	
 	Porque los sistemas de adquisión de datos son tan importantes en la ciencia
 	Cuales son las dificultades de realizar uno (depende de las especificaciones, el tiempo y el capital humano)
@@ -61,10 +61,10 @@
     De las leyes anteriores y la Figura \ref{fig:intensidad_bb} se puede deducir que la radiación UV, los rayos X y Gamma, son radiaciones más cálidas (radiaciones de alta energía), mientras que la radiación infrarroja está asociada a fenómenos con temperaturas cercanas a la temperatura ambiente \cite{Chang}, \cite{BlancoMDA}.     
     
     \section{Radiación Infrarroja} 
-    La radiación infrarroja es un tipo de radiación electromagnética que cuenta con longitudes de onda mayores que las del rango visible. Se encuentra en el rango de 0.77$\mu m$ - 1$mm$ \cite{BlancoMDA}, y a su vez se divide en varias regiones las cuales se muestran en la Tabla \ref{tab:Div_IR}.
+    La radiación infrarroja es un tipo de radiación electromagnética que cuenta con longitudes de onda mayores que las del rango visible. Se encuentra en el rango de 0.77$\mu m$ - 1$mm$ \cite{BlancoMDA}, y a su vez se divide en varias regiones las cuales se muestran en la Tabla \ref{tab:Div_IR} \cite{Rogalski}.
     
             \begin{table}[htbp]
-                \caption{División de la radiación infrarroja\cite{Rogalski}}
+                \caption{División de la radiación infrarroja}
                 \begin{center}
                     \resizebox{0.8\linewidth}{!}{ 
                     \begin{NiceTabular}{ l c }
@@ -110,7 +110,7 @@ La mayoría de las aplicaciones en detección de radiación infrarroja requieren
 
 
 
-Despejando la temperatura de la \textit{Ley de desplazamiento de Wien} (ecuación \ref{eq:Wien}) \cite{BlancoMDA}:
+Despejando la temperatura de la ecuación \ref{eq:Wien} \cite{BlancoMDA}:
     \begin{equation}
         T_{max} = \frac{2.90\times10^{-3}\ mK}{8\mu m} = 362.5K
         \label{eq:tempmax}
@@ -130,16 +130,34 @@ El material de fabricación y longitud de onda de operación de los detectores i
     
     Un detector infrarrojo es un dispositivo capaz de absorber parte de la energía infrarroja radiada hacia él, provocando una variación en alguna de sus propiedades eléctricas \cite{BlancoMDA}. Podemos pensar en un detector infrarrojo como un transductor, el cual convierte un tipo de señal en otra; el detector infrarrojo convierte la radiación infrarroja incidente en una señal eléctrica \cite{Vincent}.
     
-    Dependiendo de la aplicación, el rango del espectro electromagnético y la temperatura en los que se desee trabajar, se debe diseñar o utilizar un detector específico que cumpla con los requerimientos, ya que cada aplicación requiere características diferentes a las demás \cite{BlancoMDA}, \cite{Rogalski}.\\
+    Dependiendo de la aplicación, el rango del espectro electromagnético y la temperatura en los que se desee trabajar, se debe diseñar o utilizar un detector específico que cumpla con los requerimientos, ya que cada aplicación requiere características diferentes a las demás \cite{Rogalski},\cite{BlancoMDA}.\\
     Los detectores infrarrojos se pueden clasificar en dos categorías: \textit{Detectores de fotones} y \textit{detectores térmicos}.
     
-		\subsection{Detectores de fotones} 
+		\subsection{Detectores de fotones}
+		En los detectores de fotones, la formación de pares electrón-hueco es consecuencia de la detección de radiación absorbida \cite{BlancoMDA}. En estos dispositivos, el fotón que incide sobre la superficie del material puede ser absorbido, lo que resulta en la remoción de un electrón desde la banda de valencia o desde un estado localizado dentro de la banda prohibida hasta la banda de conducción.
+
+Generalmente, los detectores de fotones que operan a longitudes de onda de aproximadamente 3$\mu m$ requieren de un sistema de enfriamiento. Esto es necesario para prevenir la generación térmica de portadores de carga, la cual es su principal desventaja, ya que aumenta su costo y complejidad de operación. No obstante, su resolución y desempeño son bastante buenos \cite{Vincent},\cite{BlancoMDA}. 
 		   
 		\subsection{Detectores térmicos}
+		El funcionamiento de los detectores térmicos se basa en la generación de una salida eléctrica medible como resistencia o diferencia de potencial debido al cambio de temperatura del material causado por la radiación incidente.
+Estos detectores pueden funcionar a temperatura ambiente, son económicos, compactos, de bajo consumo energético y tienen una larga vida útil, pero su capacidad de detección es baja \cite{Rogalski},\cite{BlancoMDA}.
+Algunos de los principales detectores térmicos infrarrojos son explicados a continuación.
 		
-		\begin{enumerate}
-		    \item Resistivos
-		\end{enumerate}
+		\subsubsection{Celda de Golay}
+		La celda de Golay es un detector térmico principalmente utilizado en espectroscopía infrarroja, la celda consiste en una cámara herméticamente cerrada llena de gas y un espejo flexible. A medida que la radiación infrarroja incide, el gas se calienta y se expande, provocando que el espejo flexible se mueva. El movimiento del espejo desvía un haz de luz que incide sobre otro detector generando un cambio en su irradiancia, después esa señal es procesada \cite{Vincent},\cite{BlancoMDA}.
+		\subsubsection{Bolómetros y Microbolómetros}
+		Los bolómetros y microbolómetros son dispositivos que detectan la radiación infrarroja mediante el cambio en la resistencia eléctrica de un material al variar su temperatura. Conforme la resistencia absorbe calor, su temperatura aumenta y su resistencia se modifica.
+Este tipo de sensores deben polarizarse con corriente o voltaje para que puedan funcionar.
+Si son polarizados con corriente, el cambio de la resistencia se puede detectar y medir como un cambio de tensión, pero si se polariza con voltaje entonces se detectará como un cambio de corriente \cite{Rogalski},\cite{Vincent}.
+		\subsubsection{Termopares y Termopilas}
+		Los termopares y las termopilas están formados por la unión de dos conductores diferentes unidos por un extremo. Cuando la temperatura aumenta en esa unión, se genera una diferencia de potencial. Al conectar en serie varias uniones de conductores, se produce una tensión más elevada y, por lo tanto, medible \cite{Rogalski},\cite{Vincent}.
+		
+		\subsubsection{Detectores piroeléctricos y ferroeléctricos}
+		Estos detectores pueden visualizarse como un capacitor con dos electrodos metálicos colocados perpendicularmente. Cuando un detector piroeléctrico absorbe radiación, su temperatura cambia, lo que genera una carga en el capacitor y una corriente que depende del cambio de temperatura. Si la temperatura permanece constante, la corriente será nula.
+
+Los detectores ferroeléctricos operan bajo el mismo principio que los piroeléctricos, pero con la diferencia de que el efecto se produce mediante un campo eléctrico \cite{Rogalski}, \cite{BlancoMDA}.
+		
+		
 		 
 				          
 		
