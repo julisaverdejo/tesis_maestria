@@ -1,14 +1,6 @@
 \chapter{Introducción}
 
-
-	Los microbolomeetros son bonitos y 
-	
-	Porque los sistemas de adquisión de datos son tan importantes en la ciencia
-	Cuales son las dificultades de realizar uno (depende de las especificaciones, el tiempo y el capital humano)
-	Historia de los sistemas de adquisión de datos
-	Ejemplos de sistemas de adquisión de datos
-	Aplicaciones de sistemas de adquisión de datos
-	Puedes enfocarlo al microbolometro o en general
+    \lipsum[1]
     
     \section{Radiación Electromagnética}
     La radiación electromagnética es la emisión y transmisión de energía en forma de ondas electromagnéticas. El espectro electromagnético es una representación de los diversos tipos de radiación existentes, en él se definen los intervalos de longitudes de onda o frecuencia que cada una de ellas abarca \cite{Chang}.
@@ -21,12 +13,16 @@
     
     Estas radiaciones obedecen las mismas leyes, la diferencia entre ellas radica en su longitud de onda o frecuencia, así como en la manera en que interactúan con los materiales ópticos, incluída la atmósfera \cite{Vincent}.
     
-    Todos los cuerpos emiten radiación e.m  y debido al movimiento de sus átomos y moléculas se genera una temperatura en ellos. Los cuerpos con una temperatura mayor a 0K emiten radiación térmica por medio de ondas e.m. La radiación térmica es la radiación que emite un cuerpo por su temperatura \cite{Hollands}.\\
-    La capacidad que tiene un cuerpo para emitir radiación está fuertemente relacionada con su capacidad de absorberla \cite{Beiser}.\\
-    Una superficie ideal que absorbe toda la radiación que incide sobre él se denomina \textit{cuerpo negro} y el espectro de radiación que emite se llama \textit{radiación de cuerpo negro} \cite{Sears}.\\
-    A pesar de que en la naturaleza no existe un objeto físico que pueda absorber toda la radiación incidente \cite{FUV3}, este puede representarse como un objeto hueco con una pequeña apertura donde cualquier radiación que incida en ella ingresa a la cavidad donde queda atrapada hasta que es absorbida \cite{Beiser}, \cite{FUV3}. En equilibrio térmico la radiación emitida por el cuerpo será exactamente igual a la absorbida.\\
+    Todos los cuerpos emiten radiación e.m  y debido al movimiento de sus átomos y moléculas se genera una temperatura en ellos. Los cuerpos con una temperatura mayor a 0K emiten radiación térmica por medio de ondas e.m. La radiación térmica es la radiación que emite un cuerpo por su temperatura \cite{Hollands}.
+    
+    La capacidad que tiene un cuerpo para emitir radiación está fuertemente relacionada con su capacidad de absorberla \cite{Beiser}.
+    
+    Una superficie ideal que absorbe toda la radiación que incide sobre él se denomina \textit{cuerpo negro} y el espectro de radiación que emite se llama \textit{radiación de cuerpo negro} \cite{Sears}.
+    
+    A pesar de que en la naturaleza no existe un objeto físico que pueda absorber toda la radiación incidente \cite{FUV3}, este puede representarse como un objeto hueco con una pequeña apertura donde cualquier radiación que incida en ella ingresa a la cavidad donde queda atrapada hasta que es absorbida \cite{Beiser}, \cite{FUV3}. En equilibrio térmico la radiación emitida por el cuerpo será exactamente igual a la absorbida.
+    
     El cuerpo negro fue creado como una herramienta auxiliar para entender como los objetos emiten y absorben radiación.
-    Hacia finales del siglo XIX la radiación de cuerpo negro ya había sido estudiada y dos leyes importantes sintetizaron los descubrimientos experimentales sobre este tema: La \textit{Ley de Stefan-Boltzmann} y la \textit{Ley de desplazamiento de Wien} \cite{FUV3}.\\
+    Hacia finales del siglo XIX la radiación de cuerpo negro ya había sido estudiada y dos leyes importantes sintetizaron los descubrimientos experimentales sobre este tema: La \textit{Ley de Stefan-Boltzmann} y la \textit{Ley de desplazamiento de Wien} \cite{FUV3}.
     
     La \textit{Ley de Stefan-Boltzmann} plantea que la intensidad de la radiación emitida por un cuerpo negro depende de su temperatura. La intensidad es proporcional a la cuarta potencia de la temperatura absoluta del cuerpo:
     
@@ -34,10 +30,11 @@
         I = \sigma T^{4}
         \label{eq:Stefan-Boltzmann}
     \end{equation}
+    donde:
     
-    Donde:\\
-    $T$ es la temperatura del cuerpo negro en K.\\
-    $\sigma$ es la constante de Stefan-Boltzmann, $\sigma = 5.670\times10^{-8}\ W/m^{2}K^{4}$\\
+    $T$ es la temperatura del cuerpo negro en K.
+    
+    $\sigma$ es la constante de Stefan-Boltzmann, $\sigma = 5.670\times10^{-8}\ W/m^{2}K^{4}$
     
     La intensidad de la radiación no se distribuye uniformemente a lo largo de todas las longitudes de onda. En cambio, su distribución puede medirse y describirse utilizando la intensidad por intervalo de longitud de onda, $I(\lambda)d\lambda$.
             \begin{figure}[hbtp]
@@ -49,14 +46,15 @@
     \newpage
     La Figura \ref{fig:intensidad_bb} muestra las intensidades registradas a dos temperaturas diferentes. En cada caso hay una longitud de onda específica $\lambda_{m}$ en la que la intensidad de la radiación emitida es máxima.
     
-    La \textit{Ley de desplazamiento de Wien} indica que cuando la temperatura de un cuerpo negro aumenta, la longitud de onda en la que se emite la radiación máxima se desplaza hacia valores más cortos:\\
+    La \textit{Ley de desplazamiento de Wien} indica que cuando la temperatura de un cuerpo negro aumenta, la longitud de onda en la que se emite la radiación máxima se desplaza hacia valores más cortos:
+    
     \begin{equation}
         \lambda_{m} = \frac{2.90\times10^{-3}\ mK}{T}
         \label{eq:Wien}
-    \end{equation}  
+    \end{equation}   
+    donde:
     
-    Donde:\\
-    $\lambda_{m}$ es la longitud de onda en la que un cuerpo negro emite la mayor cantidad de radiación a una determinada temperatura \cite{Sears},\cite{FUV3}.\\
+    $\lambda_{m}$ es la longitud de onda en la que un cuerpo negro emite la mayor cantidad de radiación a una determinada temperatura \cite{Sears},\cite{FUV3}.
     
     De las leyes anteriores y la Figura \ref{fig:intensidad_bb} se puede deducir que la radiación UV, los rayos X y Gamma, son radiaciones más cálidas (radiaciones de alta energía), mientras que la radiación infrarroja está asociada a fenómenos con temperaturas cercanas a la temperatura ambiente \cite{Chang}, \cite{BlancoMDA}.     
     
@@ -64,20 +62,23 @@
     La radiación infrarroja es un tipo de radiación electromagnética que cuenta con longitudes de onda mayores que las del rango visible. Se encuentra en el rango de 0.77$\mu m$ - 1$mm$ \cite{BlancoMDA}, y a su vez se divide en varias regiones las cuales se muestran en la Tabla \ref{tab:Div_IR} \cite{Rogalski}.
     
             \begin{table}[htbp]
-                \caption{División de la radiación infrarroja}
+                \caption{División de la radiación infrarroja.}
                 \begin{center}
                     \resizebox{0.8\linewidth}{!}{ 
-                    \begin{NiceTabular}{ l c }
+                    \begin{NiceTabular}{|l|c| }
                         \CodeBefore
                         \Body
+                        \hline
                         \textbf{Region}  & \textbf{Rango de frecuencia ($\mu m$)}\\
+                        \hline
                         Near infrared (NIR)   & 0.78 - 1\\
                         Short wavelength IR (SWIR)   & 1 - 3\\
                         Medium wavelength IR (MWIR) & 3 - 6\\
                         Long wavelength IR (LWIR)  & 6 - 15\\
                         Very long wavelength IR (VLWIR) & 15 - 30\\
                         Far infrared (FIR)  & 30 - 100\\
-                        Submillimeter (SubMM) & 100 - 1000
+                        Submillimeter (SubMM) & 100 - 1000\\
+                        \hline
                     \end{NiceTabular}
                     }
                 \label{tab:Div_IR}
@@ -99,7 +100,7 @@ Algunas de las aplicaciones de la radiación infrarroja son:
 			\end{itemize}
 \cite{Rogalski}, \cite{BlancoMDA}.
 
-La mayoría de las aplicaciones en detección de radiación infrarroja requieren que esta se transmita a través del aire \cite{Jimenez}. La atmósfera terrestre se compone de ozono ($O_{3}$), dióxido de carbono ($CO_{2}$) y vapor de agua ($H_{2}O$). Estas moléculas bloquean algunas regiones del espectro infrarrojo, impidiendo la transmisión de la radiación IR a la atmósfera. Las longitudes de onda que no son afectadas por estas moléculas reciben el nombre de ventanas atmosféricas \cite{Rogalski}, \cite{Motilal}. En la Figura \ref{fig:atmos_window} podemos observarlas.\\
+La mayoría de las aplicaciones en detección de radiación infrarroja requieren que esta se transmita a través del aire \cite{Jimenez}. La atmósfera terrestre se compone de ozono ($O_{3}$), dióxido de carbono ($CO_{2}$) y vapor de agua ($H_{2}O$). Estas moléculas bloquean algunas regiones del espectro infrarrojo, impidiendo la transmisión de la radiación IR a la atmósfera. Las longitudes de onda que no son afectadas por estas moléculas reciben el nombre de ventanas atmosféricas \cite{Rogalski}, \cite{Motilal}. En la Figura \ref{fig:atmos_window} podemos observarlas.
 
             \begin{figure}[hbtp]
                 \centering
@@ -121,7 +122,7 @@ Despejando la temperatura de la ecuación \ref{eq:Wien} \cite{BlancoMDA}:
         \label{eq:tempmin}
     \end{equation}
 
-podemos deducir que los detectores infrarrojos que operan en la ventana de 8 - 14 $\mu m$ tienen mayor sensibilidad a la temperatura ambiente \cite{Rogalski}.\\
+podemos deducir que los detectores infrarrojos que operan en la ventana de 8 - 14 $\mu m$ tienen mayor sensibilidad a la temperatura ambiente \cite{Rogalski}.
 
 El material de fabricación y longitud de onda de operación de los detectores infrarrojos cambian de acuerdo a la aplicación en la que se desee trabajar \cite{Rogalski}.					           
      
@@ -130,7 +131,8 @@ El material de fabricación y longitud de onda de operación de los detectores i
     
     Un detector infrarrojo es un dispositivo capaz de absorber parte de la energía infrarroja radiada hacia él, provocando una variación en alguna de sus propiedades eléctricas \cite{BlancoMDA}. Podemos pensar en un detector infrarrojo como un transductor, el cual convierte un tipo de señal en otra; el detector infrarrojo convierte la radiación infrarroja incidente en una señal eléctrica \cite{Vincent}.
     
-    Dependiendo de la aplicación, el rango del espectro electromagnético y la temperatura en los que se desee trabajar, se debe diseñar o utilizar un detector específico que cumpla con los requerimientos, ya que cada aplicación requiere características diferentes a las demás \cite{Rogalski},\cite{BlancoMDA}.\\
+    Dependiendo de la aplicación, el rango del espectro electromagnético y la temperatura en los que se desee trabajar, se debe diseñar o utilizar un detector específico que cumpla con los requerimientos, ya que cada aplicación requiere características diferentes a las demás \cite{Rogalski},\cite{BlancoMDA}.
+    
     Los detectores infrarrojos se pueden clasificar en dos categorías: \textit{Detectores de fotones} y \textit{detectores térmicos}.
     
 		\subsection{Detectores de fotones}
@@ -157,9 +159,7 @@ Si son polarizados con corriente, el cambio de la resistencia se puede detectar 
 
 Los detectores ferroeléctricos operan bajo el mismo principio que los piroeléctricos, pero con la diferencia de que el efecto se produce mediante un campo eléctrico \cite{Rogalski}, \cite{BlancoMDA}.
 		
-		
-		 
-				          
+    \lipsum[1] 					          
 		
     \section{Objetivos}
 	
