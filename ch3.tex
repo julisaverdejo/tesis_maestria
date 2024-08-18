@@ -6,17 +6,17 @@
 
     La comunicación serial puede utilizarse tanto para transferir datos a alta velocidad como a baja velocidad. En una interfaz de alta velocidad, como USB y gigabit Ethernet, la velocidad de transmisión de datos puede alcanzar varios cientos de millones de bits por segundo o más. 
 
-    En una interfaz de baja velocidad, la velocidad de transmisión de datos oscila entre varios miles y varios cientos de miles de bits por segundo. Es adecuada para la mayoría de los periféricos de I/O generales y para tareas de adquisición y control de datos. Dado que la velocidad de datos es mucho más lenta que la velocidad de reloj de una FPGA, estos esquemas pueden ser realizados por los elementos lógicos genéricos de una FPGA. A continuación se discuten los el esquemas UART y SPI.
+    En una interfaz de baja velocidad, la velocidad de transmisión de datos oscila entre varios miles y varios cientos de miles de bits por segundo. Es adecuada para la mayoría de los periféricos de I/O generales y para tareas de adquisición y control de datos. Dado que la velocidad de datos es mucho más lenta que la velocidad de reloj de una FPGA, estos esquemas pueden ser realizados por los elementos lógicos genéricos de una FPGA. A continuación se discuten los esquemas UART y SPI.
 
 	\section{Controlador UART}
 
-    La comunicación serial utiliza una única línea de datos para intercambiar información entre dos sistemas. El sistema transmisor convierte los datos paralelos en un flujo serie y el sistema receptor vuelve a ensamblar los datos serie en su formato paralelo original. El esquema más utilizado es el UART (receptor y transmisor asíncrono universal).
+    La comunicación serial utiliza una única línea de datos para intercambiar información entre dos sistemas. El sistema transmisor convierte los datos paralelos en un flujo serie y el sistema receptor vuelve a ensamblar los datos serie en su formato paralelo original. El esquema más utilizado es el UART, (Universal Asynchronous Receiver and Transmitter) o receptor y transmisor asíncrono universal en español.
 
     \subsection{Visión general}
 
     Un controlador UART básico incluye un transmisor y un receptor. El transmisor es un registro de corrimiento especial que carga datos en paralelo y luego los desplaza bit a bit a una velocidad específica. El receptor, por su parte, desplaza los datos bit a bit y los vuelve a ensamblar. La línea serial es 1 cuando está inactiva. La transmisión comienza con un bit de inicio, que es 0, seguido de bits de datos y un bit de paridad opcional, y termina con bits de parada, que son 1. El número de bits de datos puede ser 6, 7 u 8. El bit de paridad opcional se utiliza para la detección de errores. Para paridad impar, se pone a 0 cuando los bits de datos tienen un número impar de 1's. Para paridad par, se pone a 0 cuando los bits de datos tienen un número par de 1's. El número de bits de parada puede ser 1, 1,5 ó 2. En la Figura \ref{fig:uart_transmission} se muestra la transmisión con ocho bits de datos, sin paridad y un bit de parada. Observe que el LSB de la palabra de datos se transmite primero.
 
-    \begin{figure}[!h]
+    \begin{figure}[hbtp]
       \centering
       \includegraphics[width=0.95\textwidth]{uart_transmission}
       \caption{Diagrama de la transmisión de un byte serial con UART.}
@@ -27,10 +27,10 @@
 
     \subsection{Procedimiento de sobremuestreo}
 
-    La velocidad de muestreo más utilizada es 16 veces la velocidad en baudios, lo que significa que cada bit serie se muestrea 16 veces. Para un enlace de comunicación con N bits de datos y M bits de parada, el esquema de sobremuestreo funciona como sigue:
+    La velocidad de muestreo más utilizada es 16 veces la velocidad en baudios, lo que significa que cada bit serie se muestrea 16 veces. Para un enlace de comunicación con N bits de datos y M bits de parada, el esquema de sobremuestreo funciona de la siguiente manera:
     
     \begin{enumerate}
-      \item Espera hasta que la señal entrante se convierta en 0, el comienzo del bit de inicio, y luego comienza a contar los ticks de muestreo.
+      \item Espera hasta que la señal entrante se convierta en 0, el comienzo del bit de inicio, y luego comienza a contar los pulsos de muestreo.
       \item Cuando el contador llegue a 7, la señal entrante alcanzará el punto medio del bit de inicio. Limpia el contador a 0 y reinícialo.
       \item Cuando el contador llegue a 15, la señal entrante habrá avanzado un bit y alcanzará el punto medio del primer bit de datos. Obtén su valor, desplázalo a un registro y reinicia el contador.
       \item Repite el paso 3 N–1 veces más para obtener los bits de datos restantes.
@@ -38,7 +38,29 @@
       \item Repite el paso 3 M veces más para obtener los bits de parada.
     \end{enumerate}
 
-    El esquema de sobremuestreo realiza básicamente la función de una señal de reloj. En lugar de utilizar el flanco ascendente para indicar cuándo es válida la señal de entrada, utiliza los ticks de muestreo para estimar el punto medio de cada bit. Aunque el receptor no tiene información sobre el momento exacto de inicio del bit, la estimación puede estar desviada como máximo en $1/16$. Las siguientes recuperaciones de bits de datos también se desvían como máximo de $1/16$ del punto medio. Debido al sobremuestreo, la velocidad en baudios sólo puede ser una pequeña fracción de la velocidad de reloj del sistema, por lo que este esquema no es apropiado para una velocidad de datos alta.
+    El esquema de sobremuestreo realiza básicamente la función de una señal de reloj. En lugar de utilizar el flanco ascendente para indicar cuándo es válida la señal de entrada, utiliza los pulsos de muestreo para estimar el punto medio de cada bit. Aunque el receptor no tiene información sobre el momento exacto de inicio del bit, la estimación puede estar desviada como máximo en $1/16$. Las siguientes recuperaciones de bits de datos también se desvían como máximo de $1/16$ del punto medio. Debido al sobremuestreo, la velocidad en baudios sólo puede ser una pequeña fracción de la velocidad de reloj del sistema, por lo que este esquema no es apropiado para una velocidad de datos alta.
+
+
+    \subsection{Diseño conceptual}
+
+      El diagrama de alto nivel de un sistema UART se muestra en la Figura \ref{fig:uart_diagram}. Consiste en tres componentes principales. El generador de la tasa de baudios genera una señal de sobremuestreo. El receptor realiza la conversión de serie a paralelo y el transmisor realiza la conversión de paralelo a serie.
+
+    \begin{figure}[h!]
+      \centering
+      \includegraphics[width=0.8\textwidth]{uart_diagram}
+      \caption{Diagrama de bloques de una controlador UART completo.}
+      \label{fig:uart_diagram}
+    \end{figure}
+
+    \subsection{Generador de la tasa de baudios}
+
+    El generador de la tasa de baudios genera una señal de muestreo cuya frecuencia es exactamente 16 veces la tasa de baudios designada para el UART. Para evitar la creación de un nuevo dominio de reloj y violar el principio de diseño síncrono, la señal de muestreo debe funcionar como pulsos de habilitación en lugar de la señal de reloj para el receptor UART.
+
+    El generador de la tasa de baudios es un contador programable y el código HDL se muestra en el Código \ref{cod:baud_gen}. El código es un contador mod$-m$ parametrizado que se reinicia cada vez que el contador llega a un valor determinado. Por ejemplo para una tasa de 19,200 baudios, la tasa de muestreo tiene que ser de 307,200 (es decir, 19,200 $\times$ 16) pulsos por segundo. Dada una frecuencia del reloj de sistema de 50 MHz, el generador de la tasa de baudios necesita un contador mod-163, $\left( \frac{50 \times 10^{6}}{19200 \times 16} \right)$, en el cual se genera un pulso de ciclo de reloj cada 163 ciclos de reloj del sistema.
+
+    \subsection{Receptor UART}
+
+    \subsection{Transmisor UART}
 
 	\section{Controlador SPI}
 
@@ -134,9 +156,9 @@ Dado que la primera mitad del periodo del reloj SPI es 0, el valor en SCLK perma
 
     El diagrama de tiempo de los cuatro modos se muestra en la Figura \ref{fig:spi_timing_diagram_modes}. El modo 0 es el modo más comúnmente utilizado. En este modo, el valor en reposo es 0 y el ciclo del reloj comienza con 0. Dado que el valor en reposo y el valor inicial del reloj son los mismos, el primer bit de datos se transmite antes del primer flanco de transición. En el modo 1, el valor en reposo también es 0, pero el ciclo del reloj comienza con 1. El valor inicial de 1 lleva a una transición de 0 a 1, por lo tanto, el primer bit se transmite en el primer flanco. Es importante notar que en estos dos modos, el período del reloj y el tiempo de inicio son los mismos, pero sus valores están fuera de fase.
 
-    \begin{figure}[hbtp]
+    \begin{figure}[!h]
       \centering
-      \includegraphics[width=0.8\textwidth]{example-image-a}
+      \includegraphics[width=0.85\textwidth]{spi_timing_diagram_modes}
       \caption{Diagrama de tiempos de los diferentes modos SPI.}
       \label{fig:spi_timing_diagram_modes}
     \end{figure}
@@ -157,25 +179,22 @@ Dado que la primera mitad del periodo del reloj SPI es 0, el valor en SCLK perma
 
     Una transacción se muestra en la Figura \ref{fig:spi_timing_diagram_aspects}. Las transiciones causadas por la activación y desactivación de CS se utilizan para activar ciertas acciones, como enviar un bit o capturar datos en paralelo, en el dispositivo esclavo. Esto implica que CS debe estar conectado al maestro, incluso si solo hay un dispositivo esclavo; es decir, simplemente conectarlo a 0 no funcionará. El estándar SPI no define explícitamente el papel de la señal CS ni el protocolo en la transacción. Además, los requisitos de temporización como el tiempo de preparación de CS ($\text{t}_{\text{SS\_SETUP}}$), que es el intervalo entre la activación de CS y el inicio del reloj, el tiempo de retención de CS ($\text{t}_{\text{SS\_HOLD}}$), que es el intervalo entre la desactivación de CS y la terminación del reloj, y el tiempo de cambio entre dos transacciones ($\text{t}_{\text{SS\_TURN}}$) no esta especificado.
 
-    \begin{figure}[hbtp]
+    \begin{figure}[!h]
       \centering
-      \includegraphics[width=0.8\textwidth]{example-image-b}
-      \caption{Diagrama de tiempos con aspectos indefinidos.}
+      \includegraphics[width=0.95\textwidth]{spi_timing_diagram_aspects}
+      \caption{Diagrama de tiempos con aspectos indefinidos, SPI modo 0.}
       \label{fig:spi_timing_diagram_aspects}
     \end{figure}
 
     El segundo aspecto indefinido es el número de bits en un intercambio de datos. En la Figura \ref{fig:spi_timing_diagram} se transfieren ocho bits. Sin embargo, el estándar SPI no especifica el número de bits transferidos en una transacción.
 
-    Finalmente, el estándar SPI no especifica el orden de bits de la transmisión, es decir, si se transfiere primero el MSB o el LSB de un byte de datos o de una palabra de datos. El MSB se utiliza comúnmente, pero no está garantizado.
+    Finalmente, el estándar SPI no especifica el orden de bits de la transmisión, es decir, si se transfiere primero el bit mas significactivo (MSB) o el bit menos significativo (LSB) de un byte de datos o de una palabra de datos. El MSB se utiliza comúnmente, pero no está garantizado.
 
     Debido a estos aspectos indefinidos, debemos consultar la hoja de datos del dispositivo y adaptar el acceso para cada dispositivo. Esto suele hacerlo el controlador de software y el programa de aplicación.
 
+	\section{Digital-To-Analog Converters}
 
+	\section{Analog-To-Digital Converters}
 
-
-
-	
-	\section{DACs}
-
-	\section{ADCs}
+  Los convertidores analógico-digitales (ADC) traducen las magnitudes analógicas, características de la mayoría de los fenómenos del «mundo real», a lenguaje digital, utilizado en el tratamiento de la información, la informática, la transmisión de datos y los sistemas de control. Los convertidores de digital a analógico (DAC) se utilizan para transformar los datos transmitidos o almacenados, o los resultados del procesamiento digital, de nuevo en variables del «mundo real» para su control, visualización de información o procesamiento analógico posterior.
 	
