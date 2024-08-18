@@ -1,5 +1,61 @@
-\chapter{Microbolometros y descripción de especificaciones}
+\chapter{Microbolómetros y descripción de especificaciones}
 
-\lipsum[1-20]
+    \section{Propiedades}
+    En esta sección se definirán algunas propiedades importantes que son utilizadas para caracterizar el desempeño de microbolómetros.
+        \subsection{Responsividad}
+        La responsividad ($R$) se refiere a la capacidad que tiene un detector de convertir radiación incidente en una señal eléctrica
+        \begin{equation}
+        R = \frac{se\tilde{n}al\ de\ salida}{radiaci\acute{o}n\ de\ entrada}
+        \label{eq:Responsividad_0}
+        \end{equation}
+        
+        Para los microbolómetros, generalmente la radiación de entrada se define en términos de flujo radiante ($\Phi_{S}$), el cual es el producto de la irradiancia ($E$) por el área del detector ($A_{d}$) y la señal de salida  puede ser voltaje ($V_{S}$) o corriente ($I_{S}$).
+        \begin{equation}
+        R = \frac{S}{\Phi_{S}}
+        \label{eq:Responsividad}
+        \end{equation}
+        
+        La responsividad de voltaje $R_{V}$ se define como:
+        \begin{equation}
+        R_{V} = \frac{V_{S}}{EA_{d}}\phantom{abc} [V/W]
+        \label{eq:Responsividad-voltaje}
+        \end{equation}
+        
+        La responsividad de corriente es:
+        \begin{equation}
+        R_{I} = \frac{I_{S}}{EA_{d}}\phantom{abc} [A/W]
+        \label{eq:Responsividad-corriente}
+        \end{equation}
+        
+        La responsividad es un parámetro crucial para un detector, ayuda a anticipar la sensibilidad del circuito de medición necesario para observar la salida esperada o a decidir el nivel de ganancia del amplificador requerido para amplificar la señal adecuadamente.
+        
+        \subsection{Diferencia de temperatura equivalente al ruido}
+        La diferencia de temperatura equivalente al ruido (Noise Equivalent Temperature Difference - $NETD$), indica el cambio mínimo de temperatura que un microbolómetro puede detectar, reflejando su capacidad para distinguir pequeñas diferencias en la radiación térmica. Un valor de $NETD$ más bajo significa mayor sensibilidad térmica.
+        El $NETD$ se calcula con la siguiente fórmula:
+        \begin{equation}
+        NETD = \frac{(4(f/D)^{2} + 1)V_{N}}{\tau_{0}AR_{V}(\Delta P/\Delta T)_{\lambda_{1} - \lambda_{2}}}\phantom{abc} [K]
+        \label{eq:NETD}
+        \end{equation}        
+        Donde:
+        
+        $f$
+        
+        $D$
+        
+        $V_{N}$
+        
+        $\tau_{0}$
+        
+        $A$
+        
+        $R_{V}$
+        
+        \subsection{Detectividad}
+        \subsection{Conductancia térmica}
+        \subsection{Capacitancia térmica}
+        \subsection{Coeficiente de temperatura de la resistencia}
 
-To do
+
+\section{Diseño y fabricación}
+
+\section{Circuitos de lectura para un microbolómetro}
