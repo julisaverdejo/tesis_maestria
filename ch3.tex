@@ -192,9 +192,30 @@ Dado que la primera mitad del periodo del reloj SPI es 0, el valor en SCLK perma
 
     Debido a estos aspectos indefinidos, debemos consultar la hoja de datos del dispositivo y adaptar el acceso para cada dispositivo. Esto suele hacerlo el controlador de software y el programa de aplicación.
 
-	\section{Digital-To-Analog Converters}
 
-	\section{Analog-To-Digital Converters}
+  \section{Convertidores Analógico-Digitales}
 
-  Los convertidores analógico-digitales (ADC) traducen las magnitudes analógicas, características de la mayoría de los fenómenos del «mundo real», a lenguaje digital, utilizado en el tratamiento de la información, la informática, la transmisión de datos y los sistemas de control. Los convertidores de digital a analógico (DAC) se utilizan para transformar los datos transmitidos o almacenados, o los resultados del procesamiento digital, de nuevo en variables del «mundo real» para su control, visualización de información o procesamiento analógico posterior.
+    \subsection{Visión general}
+
+    Los convertidores analógico-digitales (ADC) traducen las magnitudes analógicas, características de la mayoría de los fenómenos del mundo real, a lenguaje digital, utilizado en el procesamiento de la información, la informática, la transmisión de datos y los sistemas de control \cite{Kester2007}.
+
+    Las variables de entrada analógicas, independientemente de su su origen, suelen ser convertidas mediante transductores en voltajes o corrientes. Estas magnitudes eléctricas pueden manifestarse de las siguientes formas: (1) como mediciones directas y continuas de corriente continua (DC) que pueden ser rápidas o lentas, representando un fenómeno en el dominio del tiempo, (2) como formas de onda de corriente alterna (AC) moduladas mediante diversas técnicas de modulación, (3) o en una combinación de ambas. Ejemplos del primer tipo incluyen las salidas de termopares, potenciómetros en referencias de corriente continua (DC); del segundo tipo, mediciones ópticas moduladas, puentes de corriente alterna (AC), y señales digitales sumergidas en ruido.
+
+    Las variables analógicas a tratar son aquellas que involucran voltajes o corrientes que representan fenómenos analógicos reales. Estas pueden ser de banda ancha o banda estrecha, y pueden ser escaladas a partir de la medición directa o sometidas a algún tipo de preprocesamiento analógico, como la linealización, combinación, demodulación, filtrado, retención de muestras, entre otros.
+
+    Como parte de este proceso, los voltajes y corrientes se ajustan o normalizan para que sean compatibles con los rangos de entrada asignados del ADC.
+
+    La información en forma digital se representa normalmente mediante niveles de voltaje arbitrariamente fijos referidos a tierra, ya sea en las salidas de las compuertas lógicas o aplicados a sus entradas. Los números digitales utilizados son básicamente binarios; es decir, cada bit o unidad de información tiene uno de dos posibles estados. Estos estados son apagado, falso, o 0, y encendido, verdadero, o 1. También es posible representar los dos estados lógicos mediante dos niveles diferentes de corriente; sin embargo, esto es mucho menos común que el uso de voltajes. Tampoco es necesario que los voltajes estén referidos a tierra, como en el caso de la lógica acoplada por emisor (ECL), la lógica acoplada por emisor positiva (PECL) o la lógica de señalización diferencial de bajo voltaje (LVDS).
+
+    {\color{red} Las palabras o Words son grupos de niveles que representan números digitales. Estos niveles pueden presentarse de forma simultánea en paralelo, en un bus o en grupos de entradas o salidas de compuertas, de forma serial (es decir, en una secuencia temporal) en una única línea, o como una secuencia de bytes paralelos ("serial por bytes") o nibbles (porciones más pequeñas de bytes). Por ejemplo, una palabra de 16 bits puede ocupar los 16 bits de un bus de 16 bits, dividirse en dos bytes secuenciales para un bus de 8 bits, o en cuatro nibbles de 4 bits para un bus de 4 bits.}
+
+  \section{Convertidores Digitales-Analógico}
+
+    \subsection{Visión general}
+
+    Los convertidores de digital a analógico (DAC) se utilizan para transformar los datos transmitidos o almacenados, o los resultados del procesamiento digital, de nuevo en variables del mundo real para su control, visualización de información o procesamiento analógico posterior. \cite{Kester2007}
+
+
+
+
 	
