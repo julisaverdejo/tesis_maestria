@@ -1,5 +1,9 @@
 \chapter{Sistema de adquisición de datos DAQ}
 
+  \section{Máquina de estados finitos (FSM)}
+
+  Una máquina de estados finitos (FSM, por sus siglas en inglés) se utiliza para modelar un sistema que transita entre un número finito de estados internos, con transiciones que dependen del estado actual y de la entrada externa. A diferencia de un circuito secuencial convencional, las transiciones de estado de una FSM no siguen un patrón simple y repetitivo. La lógica de próximo estado en una FSM generalmente se construye desde cero. Esto contrasta con la lógica de próximo estado en un circuito secuencial estándar, que suele estar compuesta principalmente por componentes estructurados, como incrementadores y desplazadores. En la práctica, la principal aplicación de una FSM es funcionar como el controlador de un gran sistema digital, examinando los comandos externos y el estado del sistema, y activando las señales de control adecuadas para gestionar la operación de un data path, que suele estar compuesta por componentes secuenciales convencionales. Esto se conoce como FSMD (máquina de estados finitos con data path)
+
   \section{Visión general de la comunicación serial}
 
     Con frecuencia, un sistema necesita comunicarse con otro que no reside en el mismo dispositivo. Para reducir el número de pines de I/O y el cableado externo, los dos sistemas pueden transferir datos a través de una única línea serial, bit a bit. El sistema transmisor realiza la conversión de paralelo a serie y, a continuación, envía los datos serie a través de una única línea. El sistema receptor realiza la conversión serie a paralelo y restaura los datos paralelos originales.

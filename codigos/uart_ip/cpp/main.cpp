@@ -10,6 +10,10 @@ int main(int argc, char** argv){
   double oversample = 16.0;
   double counter_value = 0.0;
 
+  std::cout << "FPGA Freq = "  << std::uppercase
+                               << freq_fpga << std::endl;
+  std::cout << "Oversample = " << oversample << std::endl;
+
   std::cout << std::fixed << std::setprecision(4);
   std::cout << "// "<< "   Baud"
                     <<  "        TxTime"
