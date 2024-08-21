@@ -2,14 +2,14 @@
 Un microbolómetro es un elemento resistivo fabricado con un material de baja capacidad térmica y alto coeficiente de temperatura, lo que permite que la radiación absorbida provoque un cambio significativo en su resistencia. El dispositivo opera mediante una corriente o voltaje de polarización controlada que atraviesa el detector mientras se monitorea el voltaje o corriente de salida. En este proceso, la energía radiante genera calor en el material, lo que altera la resistencia, sin interacción directa entre fotones y electrones.
 
 
-El astrónomo S.P. Langley diseñó el primer bolómetro en 1880, utilizando platino ennegrecido como material absorbente y un puente de Wheatstone como circuito de detección. La tecnología moderna de bolómetros comenzó en los años 1980 con los avances de Honeywell en óxido de vanadio (VOx) y de Texas Instruments en silicio amorfo (a-Si). Mucho de este desarrollo ocurrió bajo proyectos militares clasificados en Estados Unidos, por lo que la divulgación de esta información a la comunidad científica data desde 1992.
+El astrónomo S.P. Langley diseñó el primer bolómetro en 1880, utilizando platino ennegrecido como material absorbente y un puente de Wheatstone como circuito de detección. La tecnología moderna de bolómetros comenzó en la década de los 80's con los avances de Honeywell en óxido de vanadio (VOx) y de Texas Instruments en silicio amorfo (a-Si). Mucho de este desarrollo ocurrió bajo proyectos militares clasificados en Estados Unidos, por lo que la divulgación de esta información a la comunidad científica data desde 1992.
 
 
 Es muy difícil tener una representación exacta de un microbolómetro, pero este se puede representar como un circuito divisor de voltaje (Figura \ref{fig:voltage_divider}). Si el circuito está abierto y no hay radiación presente, el microbolómetro se encontrará a temperatura ambiente $T_{0}$, si el circuito está cerrado, la corriente fluirá y la resistencia del microbolómetro, $R_{B}$, se calentará, esto provocará que la temperatura incremente a $T_{1}$. Si ahora la radiación cae sobre el microbolómetro, la temperatura cambiará en un factor de $\Delta T$. Esto causará una modificación en la resistencia del microbolómetro, lo que a su vez generará una variación en el voltaje ($V_{RL}$) a través de la resistencia de carga $R_{L}$ \cite{Rogalski}. 
 
             \begin{figure}[hbtp]
                 \centering
-                \includegraphics[width=0.5\textwidth]{voltage_divider}
+                \includegraphics[width=0.4\textwidth]{voltage_divider}
                 \caption{Representación de un microbolómetro como circuito eléctrico}
                 \label{fig:voltage_divider}
             \end{figure} 
@@ -17,16 +17,22 @@ Es muy difícil tener una representación exacta de un microbolómetro, pero est
 \section{Diseño de un arreglo de microbolómetros}
 El diseño de un microbolómetro generalmente incluye un material absorbedor y un material que funge como termómetro, lo que lleva a un incremento de la temperatura debido a la absorción de radiación infrarroja, provocando finalmente un cambio en la resistencia de sus elementos. La variación en la resistencia se transmite eléctricamente al circuito integrado de lectura (ROIC) para su posterior procesamiento. Para aumentar la sensibilidad, el termómetro se mantiene aislado térmicamente del sustrato del ROIC \cite{Bhan2009}.
 
-El diagrama esquemático de la estructura típica de un microbolómetro se muestra en la Figura \ref{fig:ubol sch}.
+El diagrama esquemático de la estructura típica de un microbolómetro se muestra en la Figura \ref{fig:ubol_sch}.
             \begin{figure}[hbtp]
                 \centering
                 \includegraphics[width=0.4\textwidth]{ubol_sch}
                 \caption{Diagrama esquemático de un microbolómetro}
-                \label{fig:ubol sch}
+                \label{fig:ubol_sch}
             \end{figure}
 \newpage
-Un píxel en un arreglo de microbolómetros puede tener un área que varía entre $15\times 15 \mu m^{2}$ y $55\times 55 \mu m^{2}$. La estructura de un pixel, mostrada en la Figura, generalmente es descrita como un \textit{puente}, el cual se trata de una membrana suspendida que incluye una capa absorbente para la radiación infrarroja y un elemento termosensible que transforma el cambio de temperatura de la membrana en una señal eléctrica de salida. El \textit{piso} de este \textit{puente} es un circuito de lectura unitario y las dos \textit{rampas} son brazos de soporte utilizados para la conexión eléctrica, estos ayudan a mejorar el aislamiento térmico \cite{Vincent}, \cite{Budzier}.
+Un píxel en un arreglo de microbolómetros puede tener un área que varía entre $15\times 15\ \mu m^{2}$ y $55\times 55\ \mu m^{2}$. La estructura de un pixel, mostrada en la Figura \ref{fig:ubol_pixel}, generalmente es descrita como un \textit{puente}, el cual se trata de una membrana suspendida que incluye una capa absorbente para la radiación infrarroja y un elemento termosensible que transforma el cambio de temperatura de la membrana en una señal eléctrica de salida. El \textit{piso} de este \textit{puente} es un circuito de lectura unitario y las dos \textit{rampas} son brazos de soporte utilizados para la conexión eléctrica, estos ayudan a mejorar el aislamiento térmico \cite{Vincent}, \cite{Budzier}.
 
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.8\textwidth]{ubol_pixel}
+                \caption{Estructura de un pixel de un arreglo de microbolómetros}
+                \label{fig:ubol_pixel}
+            \end{figure}
 
 Para un microbolómetro es esencial contar con una temperatura estable, esto con la finalidad de tener una mejor detección de radiación infrarroja. El vacío provee un buen aislamiento térmico, debido a que la pérdida de calor por conducción o convección es mínima. Mientras más vacío se tenga en el envase del detector mejor será la eficiencia \cite{Lau2010}.
 Generalmente el microbolómetro requiere una atmósfera de vacío menor a 1 Pa para aislar la transferencia de calor y mejorar su respuesta \cite{Liu2020}.
@@ -134,9 +140,31 @@ El NETD generalmente es proporcionado por el fabricante.
         \alpha_{B} = TCR =\frac{1}{R_{B}}\frac{dR_{B}}{dT_{S}}
         \label{eq:TCR}
         \end{equation}
-        El cambio en la resistencia del microbolómetro en función de la temperatura depende de si el material es un metal o un semiconductor \cite{Budzier}, \cite{Wei2015}.         
+        El cambio en la resistencia del microbolómetro en función de la temperatura depende de si el material es un metal o un semiconductor \cite{Budzier}, \cite{Wei2015}.  
+               
+        \subsection{Tiempo de respuesta térmico}
+         El tiempo de respuesta térmico, $\tau_{th}$, se refiere al período que el sensor necesita para estabilizar la señal de corriente o voltaje que se mide tras un cambio en la temperatura. El cálculo de $\tau_{th}$ se obtiene con la siguiente ecuación \cite{Jimenez}.
+        \begin{equation}
+        \tau_{th} =\frac{C_{th}}{G_{th}}\phantom{abc} [s]
+        \label{eq:Tth}
+        \end{equation}          
+Si la membrana es demasiado voluminosa, el detector responderá lentamente a los cambios de temperatura, mientras que una alta conductancia térmica permitirá una respuesta rápida. Por lo tanto, el diseño del microbolómetro implica un equilibrio entre la velocidad de respuesta y la sensibilidad \cite{Jimenez}.        
+        
 
+Todos estos parámetros pueden ser evaluados mediante la obtención de las curvas V-I del microbolómetro mientras opera en un entorno de vacío y está expuesto a iluminación infrarroja \cite{Hernandez2021}.
 
+        
 La clave para desarrollar microbolómetros altamente sensibles es tener un coeficiente de temperatura alto $\alpha$, una masa térmica muy baja $C_{th}$ y un excelente aislamiento térmico (baja conductancia térmica) $G_{th}$ \cite{Rogalski}.
 
 \section{Circuitos de lectura para un microbolómetro}
+La variación en la resistencia de los microbolómetros se detecta utilizando un circuito de lectura, el cual está integrado debajo de cada pixel \cite{Budzier}.
+
+
+Un circuito de lectura integrado (\textit{Readout Integrated Circuit} - ROIC), es un circuito que captura la señal de salida de un sensor, normalmente una señal eléctrica como corriente o tensión. Esta señal a menudo necesita ser ajustada y, en algunos casos, amplificada antes de ser procesada en etapas posteriores \cite{BlancoMDA}.
+
+\subsection{Divisor resistivo}
+\subsection{Puente de Wheatstone}
+\subsection{BCDI (Bolometer Current Direct Injection)}
+\subsection{CTIA (Capacitive Trans-Impedance Amplifier)}
+\subsection{WBDA (Wheatstone Bridge Differential Amplifier)}
+\subsection{CCBDI (Constant Current Buffered Direct Injection)}
