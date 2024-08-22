@@ -10,7 +10,7 @@ Es muy difícil tener una representación exacta de un microbolómetro, pero est
             \begin{figure}[hbtp]
                 \centering
                 \includegraphics[width=0.4\textwidth]{voltage_divider}
-                \caption{Representación de un microbolómetro como circuito eléctrico}
+                \caption{Representación de un microbolómetro como circuito eléctrico.}
                 \label{fig:voltage_divider}
             \end{figure} 
 
@@ -21,7 +21,7 @@ El diagrama esquemático de la estructura típica de un microbolómetro se muest
             \begin{figure}[hbtp]
                 \centering
                 \includegraphics[width=0.4\textwidth]{ubol_sch}
-                \caption{Diagrama esquemático de un microbolómetro}
+                \caption{Diagrama esquemático de un microbolómetro.}
                 \label{fig:ubol_sch}
             \end{figure}
 \newpage
@@ -30,7 +30,7 @@ Un píxel en un arreglo de microbolómetros puede tener un área que varía entr
             \begin{figure}[hbtp]
                 \centering
                 \includegraphics[width=0.8\textwidth]{ubol_pixel}
-                \caption{Estructura de un pixel de un arreglo de microbolómetros}
+                \caption{Estructura de un pixel de un arreglo de microbolómetros.}
                 \label{fig:ubol_pixel}
             \end{figure}
 
@@ -162,9 +162,65 @@ La variación en la resistencia de los microbolómetros se detecta utilizando un
 
 Un circuito de lectura integrado (\textit{Readout Integrated Circuit} - ROIC), es un circuito que captura la señal de salida de un sensor, normalmente una señal eléctrica como corriente o tensión. Esta señal a menudo necesita ser ajustada y, en algunos casos, amplificada antes de ser procesada en etapas posteriores \cite{BlancoMDA}.
 
-\subsection{Divisor resistivo}
+
+A continuación se presentan algunas topologías utilizadas como ROICs.
+
+\subsection{Divisor resistivo} 
+Esta topología está diseñada para medir la tensión en la salida de un divisor resistivo formado por un dispositivo de referencia y un microbolómetro, como se muestra en la Figura \ref{fig:divisor}. A medida que aumenta la radiación incidente en el microbolómetro, su resistencia disminuye proporcionalmente, lo que hace que la tensión de salida dependa de la radiación recibida por el sensor \cite{BlancoMDA}.
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.3\textwidth]{divisor}
+                \caption{Divisor resistivo.}
+                \label{fig:divisor}
+            \end{figure}
+
+La tensión de salida se expresa con la siguiente ecuación:
+        \begin{equation}
+        V_{out} =\frac{V_{bias}}{R_{ref} + (R_{bol} - \Delta R)} = V_{0} - \Delta V_{out}
+        \label{eq:Divisor}
+        \end{equation} 
+Donde:
+
+
+$\Delta R$ - Variación de la resistencia debido a la radiación incidente.
+
+
+$V_{0}$ - Valor de la tensión de salida en equilibrio térmico (sin radiación incidente)
+
+
+$\Delta V_{out}$ - Valor de la disminución de la tensión de salida cuando hay radiación incidente sobre el microbolómetro.
+
 \subsection{Puente de Wheatstone}
+Este tipo de ROIC obtiene la tensión de forma diferencial utilizando un puente Wheatstone, que está compuesto por dos ramas: una de referencia y otra que contiene el microbolómetro, como se muestra en la Figura \ref{fig:wheatstone}.
+
+La parte superior de cada rama está compuesta por una resistencia de referencia, ambas con la misma magnitud resistiva ($R_{Ref_1} = R_{Ref_2}$). En la parte inferior de una de las ramas se encuentra el microbolómetro sensor, mientras que en la rama de referencia se ubica un microbolómetro aislado de la potencia incidente \cite{BlancoMDA}.
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.45\textwidth]{wheatstone}
+                \caption{Puente de Wheatstone.}
+                \label{fig:wheatstone}
+            \end{figure}
+
+En el análisis de la tensión de salida, las resistencias de referencia tienen un valor nominal de $R_{Ref}$ a temperatura ambiente. De manera similar, tanto el microbolómetro sensor como el microbolómetro aislado se consideran como resistencias, con valores resistivos a temperatura ambiente $R_{0}$ y $\Delta R$, respectivamente, para las variaciones en resistencia del microbolómetro causadas por la potencia infrarroja incidente. Por lo tanto, la tensión de salida es \cite{BlancoMDA}
+        \begin{equation}
+        V_{out} =\left(\frac{V_{bias}}{R_{Ref} + (R_{bol} - \Delta R)}(R_{0} - \Delta R)- \frac{V_{bias}}{R_{Ref}+ R_{0}}R_{0} \right)
+        \label{eq:Puente}
+        \end{equation} 
+
 \subsection{BCDI (Bolometer Current Direct Injection)}
+Este circuito de lectura emplea un capacitor en el nodo de salida, el cual facilita el filtrado de frecuencias, lo que contribuye a disminuir el nivel de ruido. No obstante, la frecuencia de corte en la salida está determinada por el valor de la resistencia del microbolómetro. A medida que aumenta la potencia incidente, la resistencia disminuye y la frecuencia de corte se incrementa \cite{BlancoMDA}.
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.4\textwidth]{BCDI}
+                \caption{Readout BCDI.}
+                \label{fig:BCDI}
+            \end{figure}
+\newpage
+La tensión de salida se encuentra dada por la siguiente ecuación:
+        \begin{equation}
+        V_{out} =\frac{V_{Bias} R_{Bol}}{R_{Ref} (sR_{Bol} C+1) + R_{Bol}}
+        \label{eq:bcdi}
+        \end{equation}
 \subsection{CTIA (Capacitive Trans-Impedance Amplifier)}
 \subsection{WBDA (Wheatstone Bridge Differential Amplifier)}
 \subsection{CCBDI (Constant Current Buffered Direct Injection)}
