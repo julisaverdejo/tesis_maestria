@@ -2,7 +2,7 @@
 // [Filename]       baud_gen.sv
 // [Project]        uart_ip
 // [Author]         Julisa Verdejo
-// [Language]       SystemVerilog 2017 [IEEE Std. 1800-2017]
+// [Language]       Verilog 2005 [IEEE Std. 1364-2005]
 // [Created]        2024.06.22
 // [Description]    Module for generating baud rate for UART communication.
 //                  Asynchronous active high reset signal
@@ -19,21 +19,21 @@ module baud_gen (
     output        tick_o
 );
 
-  logic [10:0] counter_d, counter_q;
-  logic counter_done;
+  reg  [10:0] counter_q;
+  wire [10:0] counter_d;
+  wire counter_done;
 
-  always_ff @(posedge clk_i, posedge rst_i) begin
+  always @(posedge clk_i, posedge rst_i) begin
     if (rst_i) begin
-      counter_q <= 'd0;
+      counter_q <= 11'd0;
     end else begin
       counter_q <= counter_d;
     end
   end
 
-  assign counter_done = (counter_q == dvsr_i - 'd1) ? 1'b1 : 1'b0;
-  assign counter_d = (counter_done) ? 'd0 : counter_q + 'd1;
+  assign counter_done = (counter_q == dvsr_i - 11'd1) ? 1'b1 : 1'b0;
+  assign counter_d = (counter_done) ? 11'd0 : counter_q + 11'd1;
 
   assign tick_o = counter_done;
 
-endmodule : baud_gen
-
+endmodule
