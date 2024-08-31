@@ -2,7 +2,164 @@
 
   \section{Máquina de estados finitos (FSM)}
 
-  Una máquina de estados finitos (FSM, por sus siglas en inglés) se utiliza para modelar un sistema que transita entre un número finito de estados internos, con transiciones que dependen del estado actual y de la entrada externa. A diferencia de un circuito secuencial convencional, las transiciones de estado de una FSM no siguen un patrón simple y repetitivo. La lógica de próximo estado en una FSM generalmente se construye desde cero. Esto contrasta con la lógica de próximo estado en un circuito secuencial estándar, que suele estar compuesta principalmente por componentes estructurados, como incrementadores y desplazadores. En la práctica, la principal aplicación de una FSM es funcionar como el controlador de un gran sistema digital, examinando los comandos externos y el estado del sistema, y activando las señales de control adecuadas para gestionar la operación de un data path, que suele estar compuesta por componentes secuenciales convencionales. Esto se conoce como FSMD (máquina de estados finitos con data path)
+    \subsection{Introducción}
+
+    Una máquina de estados finitos (FSM, por sus siglas en inglés) se utiliza para modelar un sistema que transita entre un número finito de estados internos, con transiciones que dependen del estado actual y de una entrada externa. A diferencia de un circuito secuencial convencional, las transiciones de estado de una FSM no siguen un patrón simple y repetitivo. La lógica de estado siguiente en una FSM generalmente se construye desde cero y a veces se conoce como lógica aleatoria. Esto contrasta con la lógica de estado siguiente en un circuito secuencial estándar, que suele estar compuesta principalmente por componentes estructurados, como incrementadores y desplazadores. En la práctica, la principal aplicación de una FSM es funcionar como el controlador de un gran sistema digital, examinando los comandos externos y el estado del sistema, y activando las señales de control adecuadas para gestionar la operación de un \textit{data path}, que suele estar compuesta por componentes secuenciales convencionales. Esto se conoce como FSMD (máquina de estados finitos con data path) del cual se tratará en una sección posterior.
+
+    \subsection{Tipos de máquinas de estado}
+
+    El diagrama de bloques básico de una FSM es similar al de un circuito secuencial regular y se muestra en la Figura \ref{fig:fsm_diagram}. Consta de un registro de estado, lógica de próximo estado y lógica de salida. Una FSM se denomina \textit{máquina Moore} si la salida depende únicamente del estado, y se denomina \textit{máquina Mealy} si la salida depende tanto del estado como de la entrada externa. En una FSM compleja, pueden coexistir ambos tipos de salida, y en ese caso, se dice que la FSM contiene una salida Moore y una salida Mealy. Aunque las salidas Moore y Mealy son similares, no son idénticas. Entender sus diferencias sutiles es fundamental para el diseño de controladores.
+
+    \begin{figure}[h!]
+      \centering
+      \includegraphics[width=0.95\textwidth]{fsm_diagram}
+      \caption{Diagrama a bloques de una FSM con salidas Moore y Mealy.}
+      \label{fig:fsm_diagram}
+    \end{figure}
+
+    \subsection{Moore vs Mealy}
+
+    Las máquinas de estados de tipo Moore son preferidas en la industria porque las salidas disponen de un ciclo completo para estabilizarse a través de la lógica combinacional, lo que facilita el cumplimiento de los tiempos de ciclo requeridos. Por otro lado, las salidas de tipo Mealy permiten que una entrada se procese después de que el ciclo ha comenzado, y dicha entrada debe atravesar la lógica combinacional y cumplir con el tiempo de preparación para la salida Mealy. Si el diseño requiere absolutamente que una entrada llegue al chip después del flanco activo del reloj, pase por la lógica y se refleje en la salida dentro de un solo ciclo, esos diseños suelen emplear una salida Mealy.
+
+    Usando un juego de palabras en inglés, se dice que ``Moore is Less'', lo que hace referencia a que las máquinas de estados de Moore dependen únicamente del estado actual, mientras que las máquinas de estados de Mealy dependen tanto del estado actual como de una o más entradas. 
+
+    En general, se evitan los diseños de FSM de Mealy a menos que sean absolutamente necesarios.
+
+    \subsection{Representación de FSM}
+
+    Una FSM generalmente se describe mediante un diagrama de estados abstracto o un diagrama ASM (diagrama de máquina de estados algorítmica), ambos capturando la entrada, salida, estados y transiciones de la FSM en una representación gráfica. Ambas representaciones contienen la misma información. El diagrama de estados es más compacto y adecuado para aplicaciones simples, mientras que el diagrama ASM, que se asemeja a un diagrama de flujo, es más descriptivo y útil para aplicaciones con condiciones de transición y acciones complejas.
+
+    \textbf{Diagrama de estados}: Un diagrama de estados se compone de \textit{nodos}, que representan estados y se dibujan como círculos, y \textit{arcos de transición} anotados. Un solo nodo y sus arcos de transición se muestran en la Figura \ref{fig:node_asm_diagram}(\subref{fig:node}). Cada arco de transición está asociado con una expresión lógica expresada en términos de señales de entrada, que representa una condición específica. El arco se toma cuando la expresión correspondiente se evalúa como verdadera.
+
+    Los valores de salida Moore se ubican dentro del círculo, ya que dependen exclusivamente del estado actual. Los valores de salida Mealy, por su parte, se asocian con las condiciones de los arcos de transición, dado que dependen tanto del estado actual como de la entrada externa. Para mantener el diagrama más claro y ordenado, solo se muestran los valores de salida que están activos. En caso contrario, la señal de salida toma su valor predeterminado (es decir, inactivo).
+
+    En la Figura \ref{fig:fsm_asm_example}(\subref{fig:fsm_example}) se muestra un diagrama de estados representativo. La FSM tiene tres estados, dos señales de entrada externas ($a$ y $b$), una señal de salida Moore ($y_{1}$) y una señal de salida Mealy ($y_{0}$). La señal $y_{1}$ se activa cuando la FSM se encuentra en los estados $S_{0}$ o $S_{1}$. Por otro lado, la señal $y_{0}$ se activa cuando la FSM está en el estado $S_{0}$ y las señales $a$ y $b$ están en 1 respectivamente.
+
+    \textbf{Diagrama ASM}: Un diagrama ASM está compuesto por una red de bloques ASM. Un \textit{bloque ASM} incluye una \textit{caja de estado} y, de manera opcional, una red de \textit{cajas de decisión} y \textit{cajas de salida condicional}. En la Figura \ref{fig:fsm_asm_example}(\subref{fig:asm}) se muestra un bloque ASM representativo.
+
+    Una caja de estado representa un estado en una FSM, y dentro de ella se enumeran los valores de salida de Moore que están activos. Es importante destacar que esta caja tiene solo un camino de salida. Una caja de decisión evalúa la condición de entrada y determina cuál camino de salida seguir. Esta caja tiene dos caminos de salida, etiquetados como T y F, que corresponden a los valores verdadero y falso de la condición. Una caja de salida condicional enumera los valores de salida Mealy que están activos y generalmente se coloca después de una caja de decisión. Esta caja indica que la señal de salida listada solo puede activarse cuando se cumple la condición correspondiente en la caja de decisión.
+
+    Un diagrama de estados puede convertirse fácilmente en un diagrama ASM, y viceversa. El diagrama ASM correspondiente al diagrama de estado FSM anterior se muestra en la Figura \ref{fig:fsm_asm_example}(\subref{fig:asm_example}).
+
+    \begin{figure}[!h]
+        \centering
+        \subfloat[Nodo\label{fig:node}]{{\includegraphics[width=0.4\textwidth]{node_diagram} }}
+        \subfloat[Bloque ASM\label{fig:asm}]{{\includegraphics[width=0.55\textwidth]{asm_diagram} }}
+        \caption{Simbolo de un estado.}
+        \label{fig:node_asm_diagram}
+    \end{figure}
+
+    \begin{figure}[!h]
+        \centering
+        \subfloat[Diagrama de estados\label{fig:fsm_example}]{{\includegraphics[width=0.45\textwidth]{fsm_example} }}
+        \subfloat[Diagrama ASM\label{fig:asm_example}]{{\includegraphics[width=0.45\textwidth]{asm_example} }}
+        \caption{Ejemplo de una FSM.}
+        \label{fig:fsm_asm_example}
+    \end{figure}
+
+
+    \subsection{FSM con data path (FSMD)}
+
+    Una FSMD (máquina de estados finitos con data path) combina una FSM y circuitos secuenciales regulares. La FSM, que a veces se conoce como \textit{control path}, examina los comandos externos y el estado, y genera señales de control para especificar la operación de los circuitos secuenciales regulares, que en conjunto se conocen como \textit{data path}. La FSMD se utiliza para implementar sistemas descritos por la \textit{metodología RT} (register transfer), en la cual las operaciones se especifican como manipulación y transferencia de datos entre un conjunto de registros.
+
+    \subsection{Operación RT simple}
+
+    Una operación RT especifica la manipulación y transferencia de datos para un único registro de destino. Se representa mediante la notación
+
+    \begin{equation}
+      r_{\text{dest}} \leftarrow f( r_{\text{src1}}, r_{\text{src2}}, \ldots, r_{\text{srcn}})
+    \end{equation}
+    donde $r_{\text{dest}}$ es el registro de destino, $r_{\text{src1}}$, $r_{\text{src2}}$ y $r_{\text{srcn}}$ son los registros de origen, y $f(\cdot)$ especifica la operación a realizar. La notación indica que el contenido de los registros de origen se alimenta a la función $f(\cdot)$, que se realiza mediante un circuito combinacional, y el resultado se pasa a la entrada del registro de destino y se almacena en el registro de destino en el siguiente flanco ascendente del reloj. 
+
+    A continuación se presentan varias operaciones RT representativas:
+
+    \begin{itemize}
+      \item $r1 \leftarrow 0$. Se almacena una constante 0 en el registro $r1$.
+      \item $r1 \leftarrow r1$. El contenido del registro $r1$ se escribe de nuevo sobre sí mismo.
+      \item $r2 \leftarrow r2 >> 3$. El registro $r2$ se desplaza tres posiciones a la derecha y luego se escribe de nuevo sobre sí mismo.
+      \item $r2 \leftarrow r1$. El contenido del registro $r1$ se transfiere al registro $r2$.
+      \item $i \leftarrow i + 1$. El contenido del registro $i$ se incrementa en 1 y el resultado se escribe sobre sí mismo.
+      \item $d \leftarrow s1 + s2 + s3$. La suma de los registros $s1$, $s2$ y $s3$ se escribe en el registro $d$.
+      \item $y \leftarrow a \cdot a$. El cuadrado de $a$ se escribe en el registro $y$.
+    \end{itemize}
+
+     Una operación RT simple puede implementarse construyendo un circuito combinacional para la función $f(\cdot)$ y conectando la entrada y la salida de los registros. Por ejemplo, considere la operación $a \leftarrow a - b + 1$. La función $f(\cdot)$ implica un restador y un incrementador. El diagrama de bloques se muestra en la Figura \ref{fig:rt_figure}(\subref{fig:rt_example}). Para mayor claridad, utilizamos los sufijos ``\_next'' y ``\_reg'' para representar la entrada y la salida de un registro. Nótese que una operación RT está sincronizada por un reloj incorporado. El resultado de la función $f(\cdot)$ no se almacena en el registro de destino hasta el siguiente flanco ascendente del reloj. El diagrama de tiempo de la operación RT anterior se muestra en la Figura \ref{fig:rt_figure}(\subref{fig:rt_example_timing}).
+
+    \begin{figure}[!h]
+        \centering
+        \subfloat[Diagrama de bloques de ejemplo RT\label{fig:rt_example}]{{\includegraphics[width=0.6\textwidth]{rt_example} }}\\
+        \subfloat[Diagrama de tiempo de ejemplo RT\label{fig:rt_example_timing}]{{\includegraphics[width=0.95\textwidth]{rt_example_timing} }}
+        \caption{Diagramas de bloques y de tiempo de una operación RT.}
+        \label{fig:rt_figure}
+    \end{figure}
+
+     \subsection{Diagrama ASMD}
+
+      Un circuito basado en la metodología de transferencia de registros (RT) especifica qué operaciones RT deben ejecutarse en cada paso. Dado que una operación RT se realiza en un ciclo de reloj, su temporización es similar a la transición de estado de una FSM. Por ello, una FSM es la opción natural para especificar la secuenciación de un algoritmo RT. 
+
+      Se extiende el diagrama ASM para incorporar operaciones RT y se denomina \textit{diagrama ASMD} (ASM con data path). Las operaciones RT se tratan como otro tipo de actividad y pueden ubicarse en los mismos lugares donde se utilizan las señales de salida.
+
+    \begin{figure}[!h]
+        \centering
+        \subfloat[Segmento ASMD\label{fig:asmd_segment}]{{\includegraphics[width=0.16\textwidth]{asmd_segment} }}
+        \subfloat[Diagrama de bloques\label{fig:asmd_segment_diagram}]{{\includegraphics[width=0.7\textwidth]{asmd_segment_diagram} }}
+        \caption{Realización de segmento ASMD.}
+        \label{fig:asmd_figure}
+    \end{figure}
+
+    Un segmento de un diagrama ASMD se muestra en la Figura \ref{fig:asmd_figure}(\subref{fig:asmd_segment}). Este segmento incluye un registro de destino, $r1$, que se inicializa con el valor 8, se suma con el contenido del registro $r2$, y luego se desplaza dos posiciones a la izquierda. Es importante señalar que el registro $r1$ debe especificarse en cada estado. Cuando $r1$ no se modifica, se debe usar la operación $r1 \leftarrow r1$ para mantener su contenido actual, como en el estado $S_{3}$. En algunos diagramas, se asume que $r1 \leftarrow r1$ es la operación RT predeterminada para el registro $r1$ y, por lo tanto, no se incluye en el diagrama ASMD. Implementar las operaciones RT de un diagrama ASMD requiere un circuito de multiplexación para dirigir el siguiente valor deseado al registro de destino. Por ejemplo, el segmento anterior puede implementarse mediante un multiplexor de 4 a 1, como se muestra en la Figura \ref{fig:asmd_figure}(\subref{fig:asmd_segment_diagram}). El estado actual de la FSM (es decir, la salida del registro de estado) controla la señal de selección del multiplexor, seleccionando así el resultado de la operación RT deseada.
+
+    Una operación RT también puede especificarse en una caja de salida condicional, como se muestra con el registro $r2$ en la Figura \ref{fig:asmd_rt_figure}(\subref{fig:asmd_rt_operation_diagram}). Dependiendo de la condición $a>b$, la FSMD ejecutará $r2 \leftarrow r2+a$ o $r2 \leftarrow r2+b$. Es importante señalar que todas las operaciones dentro de un bloque ASMD se realizan en paralelo. Para implementar esto, se necesitan realizar las operaciones $a>b$, $r2+a$ y $r2+b$, y utilizar un multiplexor para dirigir el valor deseado hacia $r2$. El diagrama de bloques correspondiente se muestra en la Figura \ref{fig:asmd_rt_figure}(\subref{fig:asmd_rt_operation}).
+
+    \begin{figure}[!h]
+        \centering
+        \subfloat[Diagrama de bloques\label{fig:asmd_rt_operation_diagram}]{{\includegraphics[width=0.4\textwidth]{asmd_rt_operation_diagram} }}
+        \subfloat[Bloque ASM\label{fig:asmd_rt_operation}]{{\includegraphics[width=0.55\textwidth]{asmd_rt_operation} }}
+        \caption{Realización de una operación RT en una caja de salida condicional.}
+        \label{fig:asmd_rt_figure}
+    \end{figure}
+
+    \subsection{Caja de decisión con registro}
+
+    La apariencia de un diagrama ASMD es similar a la de un diagrama de flujo convencional. La principal diferencia radica en que la operación RT en un diagrama ASMD está controlada por una señal de reloj interna, y el registro de destino se actualiza \text{cuando el FSMD sale del bloque ASMD actual}, pero no dentro del bloque. La operación $r + r-1$ en realidad significa que:
+
+    \begin{itemize}
+      \item \texttt{r\_next = r\_reg - 1}
+      \item \texttt{r\_reg = r\_next} en el flanco ascendente del reloj (es decir, cuando el FSMD sale del bloque actual).
+    \end{itemize}
+
+    Este almacenamiento retrasado puede introducir errores sutiles cuando se utiliza un registro en una caja de decisión. Considere el segmento FSMD en la Figura \ref{fig:asm_affected_delay}(\subref{fig:asm_affected_delay_old}). El registro $r$ se decrementa en la caja de estado y se utiliza en la caja de decisión. Dado que el registro $r$ no se actualiza hasta que el FSMD sale del bloque, el contenido antiguo de $r$ se utiliza para la comparación en la caja de decisión. Si se desea utilizar el nuevo valor de $r$, se debe usar la salida de la lógica combinacional (es decir, $r\_$next) en la caja de decisión (es decir, reemplazar la expresión $r == 0$ con $r\_$next $==0$), como se muestra en la Figura \ref{fig:asm_affected_delay}(\subref{fig:asm_affected_delay_new}).
+
+    \begin{figure}[!h]
+        \centering
+        \subfloat[Utilizar el valor antiguo de $r$\label{fig:asm_affected_delay_old}]{{\includegraphics[width=0.35\textwidth]{asm_affected_delay_old} }}
+        \subfloat[Utilizar el nuevo valor de $r$\label{fig:asm_affected_delay_new}]{{\includegraphics[width=0.35\textwidth]{asm_affected_delay_new} }}
+        \caption{Bloque ASM afectado por un almacenamiento retrasado.}
+        \label{fig:asm_affected_delay}
+    \end{figure}
+
+    \subsection{Diagrama de bloques de una FSMD}
+
+    El diagrama de bloques conceptual de una FSMD se divide en \textit{data path} y en \textit{control path}, como se muestra en la Figura \ref{fig:fsmd_block_diagram}. El \textit{data path} se encarga de ejecutar las operaciones RT necesarias. Consiste en:
+
+    \begin{itemize}
+      \item \textit{Data registers}: almacenan los resultados intermedios de los cálculos.
+      \item \textit{Functional units}: realizan las funciones especificadas por las operaciones RT.
+      \item \textit{Routing network}: dirige los datos entre los registros de almacenamiento y las unidades funcionales.
+    \end{itemize}
+
+    El \textit{data path} sigue la \textbf{señal de control} (Control Signal) para llevar a cabo las operaciones RT deseadas y genera la señal de \textbf{estado interno} (Internal Status).
+
+    \begin{figure}[!h]
+      \centering
+      \includegraphics[width=0.95\textwidth]{fsmd_block_diagram}
+      \caption{Diagrama de bloques de una FSMD.}
+      \label{fig:fsmd_block_diagram}
+    \end{figure}
+
+    El \textit{control path} es una FSM. Al igual que cualquier FSM convencional, contiene un registro de estado, lógica de próximo estado y lógica de salida. Utiliza la señal de \textbf{comando} (Command) externa y la señal de \textbf{estado interno} (Internal Status) del \textit{data path} como entradas, y genera la \textbf{señal de control} (Control Signal) que regula la operación del \textit{data path}. Además, la FSM genera una señal de \textbf{estado externa} (External Status) para indicar el estado de la operación del FSMD.
+
+    Es importante destacar que, aunque un FSMD está compuesta por dos tipos de circuitos secuenciales, ambos circuitos son controlados por el mismo reloj, lo que mantiene al FSMD como un sistema síncrono.
 
   \section{Visión general de la comunicación serial}
 
@@ -63,6 +220,15 @@
     El generador de la tasa de baudios es un contador programable y el código HDL se muestra en el Código \ref{cod:baud_gen}. El código es un contador mod$-m$ parametrizado que se reinicia cada vez que el contador llega a un valor determinado. Por ejemplo para una tasa de 19,200 baudios, la tasa de muestreo tiene que ser de 307,200 (es decir, 19,200 $\times$ 16) pulsos por segundo. Dada una frecuencia del reloj de sistema de 50 MHz, el generador de la tasa de baudios necesita un contador mod-163, $\left( \frac{50 \times 10^{6}}{19200 \times 16} \right)$, en el cual se genera un pulso de ciclo de reloj cada 163 ciclos de reloj del sistema.
 
     \subsection{Receptor UART}
+
+    El receptor UART obtiene el byte de datos de la línea serial mediante sobremuestreo. Utiliza la señal del generador de la tasa de baudios para estimar los puntos medios de los bits transmitidos y, a continuación, los recupera en esos puntos de manera precisa.
+
+    \begin{figure}[hbtp]
+      \centering
+      \includegraphics[width=0.75\textwidth]{asmd_uart_rx}
+      \caption{Diagrama ASMD de receptor UART.}
+      \label{fig:asmd_uart_rx}
+    \end{figure}
 
     \subsection{Transmisor UART}
 
