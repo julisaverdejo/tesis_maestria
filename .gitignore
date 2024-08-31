@@ -4,6 +4,7 @@ bibliografia/
 bibliografia2/
 excalidraw/
 codigos/uart_ip/vivado
+codigos/pixel_matrix/vivado
 
 ## Ignore files
 main.pdf
