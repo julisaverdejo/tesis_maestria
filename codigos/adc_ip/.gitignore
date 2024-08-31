@@ -1,0 +1,8 @@
+# Directories
+vivado/
+
+# C++
+*.o
+*.lib
+*.exe
+*.out
