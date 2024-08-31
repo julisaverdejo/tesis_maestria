@@ -1,6 +1,4 @@
 # Directories
-vivado/
-!vivado/vivado.srcs
 
 # C++
 *.o
