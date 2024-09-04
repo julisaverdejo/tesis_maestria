@@ -17,13 +17,14 @@ module top #(
     input          rst_i,
     input          sw_i,
     input          rx_i,
-    input          strw_i,
+	input          start_spi_i,
+    input          miso_i,
     output         mosi_o,
+    output [11:0]  dspi_o,
     output         dclk_o,
     output         cs_o,
-    output         eow_o,
-    output         slow_clk_o,	
-    output [7:0]   dout_o,
+    output         eospi_o,
+    //output [7:0]   dout_o,
     output         tx_o,
     output         eos_o
 );
@@ -31,6 +32,9 @@ module top #(
   wire [10:0] dvsr = 11'd54;           // 115200 baudrate
   localparam fpga_freq = 100_000_000;  // 100 MHz
   localparam db_baud = 1_000;          // 10 ms debounce time
+  
+  localparam  [7:0] cmd_i = 8'b10010111;    // Canal 0
+  localparam  [7:0] kmax_i = 8'd39;         // Periodo de 800ns | kmax = (t*F_FPGA - 1)/2 
   
   wire tick;
   wire tx_done;
@@ -40,6 +44,7 @@ module top #(
   wire [7:0] tx_data;
   wire [15:0] ram_out;
   wire sel;
+  wire st_spi;
 
   uart_ip #(
     .WordLength  (WordLength),
@@ -51,7 +56,7 @@ module top #(
     .din_i(tx_data),
     .rx_i(rx_i),
     .start_tx_i(start_tx),
-    .dout_o(dout_o),
+    .dout_o(),
     .tx_o(tx_o),
     .rx_done_tick_o(),
     .tx_done_tick_o(tx_done)
@@ -102,5 +107,30 @@ module top #(
     .sel_i(sel),
     .mux_o(tx_data)
 );
- 
+
+  debouncer_ip #(
+    .ClkRate(fpga_freq),
+    .Baud(db_baud)
+  ) debouncer_spi_inst (
+    .clk_i(clk_i),
+    .rst_i(rst_i),
+    .sw_i(start_spi_i),
+    .db_level_o(),
+    .db_tick_o(st_spi)
+  );
+  
+  spi_write_read spi_w_r_inst (
+  .rst_i(rst_i),
+  .clk_i(clk_i),
+  .strc_i(st_spi),
+  .cmd_i(cmd_i),
+  .kmax_i(kmax_i),
+  .miso_i(miso_i),
+  .mosi_o(mosi_o),
+  .dout_o(dspi_o),
+  .dclk_o(dclk_o),
+  .cs_o(cs_o),
+  .eoc_o(eospi_o)
+);
+
 endmodule

@@ -72,7 +72,7 @@ proc create_report { reportName command } {
 OPTRACE "synth_1" START { ROLLUP_AUTO }
 set_param checkpoint.writeSynthRtdsInDcp 1
 set_param chipscope.maxJobs 2
-set_param synth.incrementalSynthesisCache C:/Users/rock_/AppData/Roaming/Xilinx/Vivado/.Xil/Vivado-6092-DESKTOP-B70II2D/incrSyn
+set_param synth.incrementalSynthesisCache C:/Users/rock_/AppData/Roaming/Xilinx/Vivado/.Xil/Vivado-9768-DESKTOP-B70II2D/incrSyn
 set_param xicom.use_bs_reader 1
 set_msg_config -id {Synth 8-256} -limit 10000
 set_msg_config -id {Synth 8-638} -limit 10000
@@ -94,11 +94,22 @@ OPTRACE "Creating in-memory project" END { }
 OPTRACE "Adding files" START { }
 read_verilog -library xil_defaultlib {
   C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/uart_ip/rtl/baud_gen.v
+  C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/spi_write_ip/rtl/clk_div.v
   C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/counter_ip/rtl/counter_ip.v
+  C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/spi_read_ip/rtl/counter_r.v
+  C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/spi_write_ip/rtl/counter_w.v
   C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/debouncer_ip/rtl/debouncer_ip.v
   C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/pixel_matrix/vivado/vivado.srcs/sources_1/new/fsm_pixel.v
+  C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/spi_read_ip/rtl/fsm_spi_read.v
+  C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/spi_write_ip/rtl/fsm_spi_write.v
   C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/mux_ip/rtl/mux_ip.v
+  C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/spi_read_ip/rtl/pipo_reg.v
+  C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/spi_write_ip/rtl/piso_reg.v
   C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/ram_ip/rtl/ram_ip.v
+  C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/spi_read_ip/rtl/sipo_reg.v
+  C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/spi_read_ip/rtl/spi_read_ip.v
+  C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/spi_write_ip/rtl/spi_write_ip.v
+  C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/spi_adc_ip/rtl/spi_write_read.v
   C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/uart_ip/rtl/uart_ip.v
   C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/uart_ip/rtl/uart_rx.v
   C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/uart_ip/rtl/uart_tx.v
