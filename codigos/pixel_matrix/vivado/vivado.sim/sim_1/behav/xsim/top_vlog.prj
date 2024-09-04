@@ -1,0 +1,23 @@
+# compile verilog/system verilog design source files
+verilog xil_defaultlib  \
+"../../../../../../uart_ip/rtl/baud_gen.v" \
+"../../../../../../spi_write_ip/rtl/clk_div.v" \
+"../../../../../../counter_ip/rtl/counter_ip.v" \
+"../../../../../../spi_write_ip/rtl/counter_w.v" \
+"../../../../../../debouncer_ip/rtl/debouncer_ip.v" \
+"../../../../vivado.srcs/sources_1/new/fsm_pixel.v" \
+"../../../../../../spi_write_ip/rtl/fsm_spi_write.v" \
+"../../../../../../mux_ip/rtl/mux_ip.v" \
+"../../../../../../spi_write_ip/rtl/piso_reg.v" \
+"../../../../../../ram_ip/rtl/ram_ip.v" \
+"../../../../../../spi_write_ip/rtl/spi_write.v" \
+"../../../../../../uart_ip/rtl/uart_ip.v" \
+"../../../../../../uart_ip/rtl/uart_rx.v" \
+"../../../../../../uart_ip/rtl/uart_tx.v" \
+"../../../../vivado.srcs/sources_1/new/top.v" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

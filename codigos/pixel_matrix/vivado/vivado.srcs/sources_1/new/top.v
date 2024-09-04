@@ -17,7 +17,13 @@ module top #(
     input          rst_i,
     input          sw_i,
     input          rx_i,
-    output [7:0]  dout_o,
+    input          strw_i,
+    output         mosi_o,
+    output         dclk_o,
+    output         cs_o,
+    output         eow_o,
+    output         slow_clk_o,	
+    output [7:0]   dout_o,
     output         tx_o,
     output         eos_o
 );
@@ -96,5 +102,5 @@ module top #(
     .sel_i(sel),
     .mux_o(tx_data)
 );
-  
+ 
 endmodule
