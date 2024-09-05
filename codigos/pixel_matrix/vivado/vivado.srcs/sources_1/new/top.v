@@ -17,13 +17,10 @@ module top #(
     input          rst_i,
     input          sw_i,
     input          rx_i,
-	input          start_spi_i,
     input          miso_i,
     output         mosi_o,
-    output [11:0]  dspi_o,
     output         dclk_o,
     output         cs_o,
-    output         eospi_o,
     //output [7:0]   dout_o,
     output         tx_o,
     output         eos_o
@@ -40,11 +37,17 @@ module top #(
   wire tx_done;
   wire start_tx;
   wire ena_cnt_ram;
-  wire [5:0] cnt_ram;
+  wire [1:0] cnt_ram;
   wire [7:0] tx_data;
   wire [15:0] ram_out;
   wire sel;
   wire st_spi;
+  wire [15:0] doutspi;
+  wire [11:0] dspi;
+  wire eospi;
+  wire we;
+  
+  assign doutspi = {4'b0000,dspi};
 
   uart_ip #(
     .WordLength  (WordLength),
@@ -74,7 +77,7 @@ module top #(
   );
  
   counter_ip #(
-    .Width(6)
+    .Width(2)
   ) counter_ip_ram (
 	.clk_i(clk_i),
 	.rst_i(rst_i),
@@ -83,17 +86,23 @@ module top #(
   );
   
   ram_ip ram_ip_inst (
+    .clk_i(clk_i),
+    .we_i(we),
     .addr_i(cnt_ram),
-    .rom_o(ram_out)
+    .dinram_i(doutspi),
+    .doutram_o(ram_out)
   );
 
   fsm_pixel fsm_pixel_inst (
     .clk_i(clk_i),
     .rst_i(rst_i),
     .tick_i(tick),
+	.eospi_i(eospi),
     .tx_done(tx_done),
     .count_i(cnt_ram),
+	.st_spi_o(st_spi),
     .stx_o(start_tx),
+	.we_o(we),
     .en_cram_o(ena_cnt_ram),
     .sel_o(sel),
     .eos_o(eos_o)
@@ -107,17 +116,6 @@ module top #(
     .sel_i(sel),
     .mux_o(tx_data)
 );
-
-  debouncer_ip #(
-    .ClkRate(fpga_freq),
-    .Baud(db_baud)
-  ) debouncer_spi_inst (
-    .clk_i(clk_i),
-    .rst_i(rst_i),
-    .sw_i(start_spi_i),
-    .db_level_o(),
-    .db_tick_o(st_spi)
-  );
   
   spi_write_read spi_w_r_inst (
   .rst_i(rst_i),
@@ -127,10 +125,10 @@ module top #(
   .kmax_i(kmax_i),
   .miso_i(miso_i),
   .mosi_o(mosi_o),
-  .dout_o(dspi_o),
+  .dout_o(dspi),
   .dclk_o(dclk_o),
   .cs_o(cs_o),
-  .eoc_o(eospi_o)
+  .eoc_o(eospi)
 );
 
 endmodule
