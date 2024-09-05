@@ -23,6 +23,8 @@ module top #(
     output         cs_o,
     //output [7:0]   dout_o,
     output         tx_o,
+	output  [2:0]  row_o,
+	output  [2:0]  col_o,	
     output         eos_o
 );
 
@@ -36,8 +38,9 @@ module top #(
   wire tick;
   wire tx_done;
   wire start_tx;
-  wire ena_cnt_ram;
-  wire [1:0] cnt_ram;
+  wire ena_cnt_row, ena_cnt_col, ena_cnt_ram;
+  wire [2:0] cnt_row, cnt_col;
+  wire [5:0] cnt_ram;
   wire [7:0] tx_data;
   wire [15:0] ram_out;
   wire sel;
@@ -48,6 +51,8 @@ module top #(
   wire we;
   
   assign doutspi = {4'b0000,dspi};
+  assign row_o = cnt_row;
+  assign col_o = cnt_col;
 
   uart_ip #(
     .WordLength  (WordLength),
@@ -77,15 +82,35 @@ module top #(
   );
  
   counter_ip #(
-    .Width(2)
+    .Width(6)
   ) counter_ip_ram (
 	.clk_i(clk_i),
 	.rst_i(rst_i),
 	.ena_i(ena_cnt_ram),
 	.q_o(cnt_ram)
   );
+
+  counter_ip #(
+    .Width(3)
+  ) counter_ip_row (
+	.clk_i(clk_i),
+	.rst_i(rst_i),
+	.ena_i(ena_cnt_row),
+	.q_o(cnt_row)
+  );
   
-  ram_ip ram_ip_inst (
+  counter_ip #(
+    .Width(3)
+  ) counter_ip_col (
+	.clk_i(clk_i),
+	.rst_i(rst_i),
+	.ena_i(ena_cnt_col),
+	.q_o(cnt_col)
+  );  
+  
+  ram_ip #(
+    .Width(16)
+  ) ram_ip_inst (
     .clk_i(clk_i),
     .we_i(we),
     .addr_i(cnt_ram),
@@ -94,16 +119,20 @@ module top #(
   );
 
   fsm_pixel fsm_pixel_inst (
-    .clk_i(clk_i),
     .rst_i(rst_i),
+    .clk_i(clk_i),
     .tick_i(tick),
-	.eospi_i(eospi),
-    .tx_done(tx_done),
-    .count_i(cnt_ram),
-	.st_spi_o(st_spi),
+    .eospi_i(eospi),
+    .tx_done_i(tx_done),
+    .cnt_row_i(cnt_row),
+    .cnt_col_i(cnt_col),
+    .cnt_ram_i(cnt_ram),
+    .st_spi_o(st_spi),
     .stx_o(start_tx),
-	.we_o(we),
-    .en_cram_o(ena_cnt_ram),
+    .ena_cnt_row_o(ena_cnt_row),
+    .ena_cnt_col_o(ena_cnt_col),
+    .ena_cnt_ram_o(ena_cnt_ram),
+    .we_o(we),
     .sel_o(sel),
     .eos_o(eos_o)
   );  

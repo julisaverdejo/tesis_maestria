@@ -3,12 +3,12 @@ module ram_ip #(
 ) (
     input              clk_i,
 	input              we_i,
-	input  [1:0]       addr_i,
+	input  [5:0]       addr_i,
 	input  [Width-1:0] dinram_i,
 	output [Width-1:0] doutram_o
 );
 
-  reg [Width-1:0] ram [3:0];
+  reg [Width-1:0] ram [63:0];
 
   always @(posedge clk_i) begin
     if (we_i)
