@@ -12,130 +12,145 @@ module fsm_pixel(
   input  [2:0]      cnt_row_i,
   input  [2:0]      cnt_col_i,
   input  [5:0]      cnt_ram_i,
+  input  [7:0]      cnt_i,
   output reg        st_spi_o,
   output reg        stx_o,
   output reg        ena_cnt_row_o,
   output reg        ena_cnt_col_o,
   output reg        ena_cnt_ram_o,
+  output reg        ena_cnt_o,
   output reg        we_o,
   output reg        sel_o,
   output reg        eos_o
 );
 
-  localparam [3:0]  s0 = 4'b0000,
-                    s1 = 4'b0001,
-                    s2 = 4'b0010,
-				    s3 = 4'b0011,
-				    s4 = 4'b0100,
-				    s5 = 4'b0101,
-				    s6 = 4'b0110,
-				    s7 = 4'b0111,
-				    s8 = 4'b1000,
-				    s9 = 4'b1001,
-				   s10 = 4'b1010,
-				   s11 = 4'b1011,
-				   s12 = 4'b1100,
-				   s13 = 4'b1101,
-				   s14 = 4'b1110,
-				   s15 = 4'b1111;
+  localparam [4:0]  s0 = 5'b00000,
+                    s1 = 5'b00001,
+                    s2 = 5'b00010,
+				    s3 = 5'b00011,
+				    s4 = 5'b00100,
+				    s5 = 5'b00101,
+				    s6 = 5'b00110,
+				    s7 = 5'b00111,
+				    s8 = 5'b01000,
+				    s9 = 5'b01001,
+				   s10 = 5'b01010,
+				   s11 = 5'b01011,
+				   s12 = 5'b01100,
+				   s13 = 5'b01101,
+				   s14 = 5'b01110,
+				   s15 = 5'b01111,
+				   s16 = 5'b10000,
+				   s17 = 5'b10001;
 
-  reg [3:0] next_state, present_state;
+  reg [4:0] next_state, present_state;
 
   always @(*) begin
-	st_spi_o = 1'b0 ; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b1;
+	st_spi_o = 1'b0 ; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b1;
     next_state = present_state;
     case(present_state)
        s0: begin
-			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b1;
+			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b1;
              if (tick_i)
                next_state = s1;
            end
 
        s1: begin
-			st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
-            next_state = s2;
+			st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b1; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
+            if (cnt_i)
+			  next_state = s2;
            end
 
        s2: begin
-			 st_spi_o = 1'b1; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
-             next_state = s3;
-           end 
+			st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
+			next_state = s3;
+           end
 
        s3: begin
-			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
-             if (eospi_i)
-               next_state = s4;
+			st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
+			next_state = s4;
            end
 
        s4: begin
-			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; we_o = 1'b1; sel_o = 1'b0; eos_o = 1'b0;
+			 st_spi_o = 1'b1; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
              next_state = s5;
-           end
+           end 
 
        s5: begin
-			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b1; ena_cnt_ram_o = 1'b1; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
-			 next_state = s6;
+			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
+             if (eospi_i)
+               next_state = s6;
            end
 
        s6: begin
-			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
+			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b1; sel_o = 1'b0; eos_o = 1'b0;
+             next_state = s7;
+           end
+
+       s7: begin
+			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b1; ena_cnt_ram_o = 1'b1; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
+			 next_state = s8;
+           end
+
+       s8: begin
+			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
              if (cnt_col_i == 0)
-			   next_state = s7;
+			   next_state = s9;
 			 else
 			   next_state = s1;
            end
 
-       s7: begin
-			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b1; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
-             next_state = s8;
+       s9: begin
+			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b1; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
+             next_state = s10;
            end
 
-       s8: begin
-			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
+       s10: begin
+			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
              if (cnt_row_i == 0)
-               next_state = s9;
+               next_state = s11;
              else
                next_state = s1;
            end
 
-       s9: begin
-			 st_spi_o = 1'b0; stx_o = 1'b1; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
-             next_state = s10;
+       s11: begin
+			 st_spi_o = 1'b0; stx_o = 1'b1; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
+             next_state = s12;
            end		  
  
-       s10: begin
-			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
+       s12: begin
+			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
              if (tx_done_i)
-               next_state = s11;
+               next_state = s13;
            end 
  
-       s11: begin
-			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; we_o = 1'b0; sel_o = 1'b1; eos_o = 1'b0;
-             next_state = s12;
+       s13: begin
+			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b1; eos_o = 1'b0;
+             next_state = s14;
            end  
 
-       s12: begin
-			 st_spi_o = 1'b0; stx_o = 1'b1; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; we_o = 1'b0; sel_o = 1'b1; eos_o = 1'b0;
-             next_state = s13;
+       s14: begin
+			 st_spi_o = 1'b0; stx_o = 1'b1; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b1; eos_o = 1'b0;
+             next_state = s15;
            end 
            
-       s13: begin
-			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; we_o = 1'b0; sel_o = 1'b1; eos_o = 1'b0;
-             if (tx_done_i)
-               next_state = s14;
-           end
-
-       s14: begin
-			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b1; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
-             next_state = s15;
-           end
-
        s15: begin
-			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
+			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b1; eos_o = 1'b0;
+             if (tx_done_i)
+               next_state = s16;
+           end
+
+       s16: begin
+			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b1; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
+             next_state = s17;
+           end
+
+       s17: begin
+			 st_spi_o = 1'b0; stx_o = 1'b0; ena_cnt_row_o = 1'b0; ena_cnt_col_o = 1'b0; ena_cnt_ram_o = 1'b0; ena_cnt_o = 1'b0; we_o = 1'b0; sel_o = 1'b0; eos_o = 1'b0;
              if (cnt_ram_i == 0)
                next_state = s0;
              else
-               next_state = s9;
+               next_state = s11;
            end
 
       default:  begin

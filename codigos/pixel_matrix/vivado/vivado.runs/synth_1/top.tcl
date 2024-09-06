@@ -70,12 +70,8 @@ proc create_report { reportName command } {
   }
 }
 OPTRACE "synth_1" START { ROLLUP_AUTO }
-set_param checkpoint.writeSynthRtdsInDcp 1
 set_param chipscope.maxJobs 2
-set_param synth.incrementalSynthesisCache C:/Users/rock_/AppData/Roaming/Xilinx/Vivado/.Xil/Vivado-7628-DESKTOP-B70II2D/incrSyn
 set_param xicom.use_bs_reader 1
-set_msg_config -id {Synth 8-256} -limit 10000
-set_msg_config -id {Synth 8-638} -limit 10000
 OPTRACE "Creating in-memory project" START { }
 create_project -in_memory -part xc7a35tcpg236-1
 
@@ -95,6 +91,7 @@ OPTRACE "Adding files" START { }
 read_verilog -library xil_defaultlib {
   C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/uart_ip/rtl/baud_gen.v
   C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/spi_write_ip/rtl/clk_div.v
+  C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/pixel_matrix/vivado/vivado.srcs/sources_1/new/count_time_mux.v
   C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/counter_ip/rtl/counter_ip.v
   C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/spi_read_ip/rtl/counter_r.v
   C:/Users/rock_/OneDrive/Escritorio/tesis_maestria/codigos/spi_write_ip/rtl/counter_w.v

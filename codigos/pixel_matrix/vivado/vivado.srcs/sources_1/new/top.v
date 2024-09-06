@@ -34,12 +34,14 @@ module top #(
   
   localparam  [7:0] cmd_i = 8'b10010111;    // Canal 0
   localparam  [7:0] kmax_i = 8'd39;         // Periodo de 800ns | kmax = (t*F_FPGA - 1)/2 
+  localparam [25:0] delay_mux_i = 26'd99999; //1ms
   
   wire tick;
   wire tx_done;
   wire start_tx;
-  wire ena_cnt_row, ena_cnt_col, ena_cnt_ram;
+  wire ena_cnt_row, ena_cnt_col, ena_cnt_ram, ena_cnt;
   wire [2:0] cnt_row, cnt_col;
+  wire cnt;
   wire [5:0] cnt_ram;
   wire [7:0] tx_data;
   wire [15:0] ram_out;
@@ -90,6 +92,16 @@ module top #(
 	.q_o(cnt_ram)
   );
 
+  count_time_mux #(
+    .Width(26)
+  ) mod_delay_mux (
+    .rst_i(rst_i),
+    .clk_i(clk_i),
+    .h_i(ena_cnt),
+    .kmax_i(delay_mux_i),
+    .slow_clk_o(cnt)
+  );
+
   counter_ip #(
     .Width(3)
   ) counter_ip_row (
@@ -127,11 +139,13 @@ module top #(
     .cnt_row_i(cnt_row),
     .cnt_col_i(cnt_col),
     .cnt_ram_i(cnt_ram),
+	.cnt_i(cnt),
     .st_spi_o(st_spi),
     .stx_o(start_tx),
     .ena_cnt_row_o(ena_cnt_row),
     .ena_cnt_col_o(ena_cnt_col),
     .ena_cnt_ram_o(ena_cnt_ram),
+	.ena_cnt_o(ena_cnt),
     .we_o(we),
     .sel_o(sel),
     .eos_o(eos_o)
