@@ -1,0 +1,7 @@
+# Directories
+
+# C++
+*.o
+*.lib
+*.exe
+*.out
