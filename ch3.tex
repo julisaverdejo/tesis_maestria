@@ -373,7 +373,7 @@ Dado que la primera mitad del periodo del reloj SPI es 0, el valor en SCLK perma
     Debido a estos aspectos indefinidos, debemos consultar la hoja de datos del dispositivo y adaptar el acceso para cada dispositivo. Esto suele hacerlo el controlador de software y el programa de aplicación.
 
 
-  \section{Convertidores Analógico-Digitales}
+  \section{Convertidores DAC y ADC}
 
     \subsection{Visión general}
 
@@ -386,6 +386,8 @@ Dado que la primera mitad del periodo del reloj SPI es 0, el valor en SCLK perma
     Como parte del proceso, los voltajes y corrientes se normalizan a rangos compatibles con los rangos de entrada asignados al ADC. Las salidas analógicas de voltaje o corriente de los DACs se generan de forma directa y en formato normalizado, aunque pueden ser procesadas posteriormente (por ejemplo, escaladas, filtradas, amplificadas, etc.)
 
     La información en forma digital se representa normalmente mediante niveles de voltaje arbitrariamente fijos referidos a tierra, ya sea en las salidas de las compuertas lógicas o aplicados a sus entradas. Los números digitales utilizados son básicamente binarios; es decir, cada bit o unidad de información tiene uno de dos posibles estados. Estos estados son apagado, falso, o 0, y encendido, verdadero, o 1. También es posible representar los dos estados lógicos mediante dos niveles diferentes de corriente; sin embargo, esto es mucho menos común que el uso de voltajes. Tampoco es necesario que los voltajes estén referidos a tierra, como en el caso de la lógica acoplada por emisor (ECL), la lógica acoplada por emisor positiva (PECL) o la lógica de señalización diferencial de bajo voltaje (LVDS).
+
+    \subsection{Códificación}
 
     Una palabra o \textit{Word} en inglés, es grupo de niveles que representan un número digital. Estos niveles pueden presentarse de forma simultánea en \textit{paralelo}, en un bus o en grupos de entradas o salidas de compuertas, de forma \textit{serial} (es decir, en una secuencia temporal) en una única línea, o como una secuencia de bytes paralelos (serial por bytes) o nibbles (porciones más pequeñas de bytes). Por ejemplo, una palabra de 16 bits puede ocupar los 16 bits de un bus de 16 bits, dividirse en dos bytes secuenciales para un bus de 8 bits, o en cuatro nibbles de 4 bits para un bus de 4 bits.
 
@@ -443,6 +445,8 @@ Dado que la primera mitad del periodo del reloj SPI es 0, el valor en SCLK perma
       \end{center}
     \end{table}
 
+    \subsection{Cuantización}
+
     La Figura \ref{fig:adc_dac_3bits} muestra la función de transferencia de un DAC ideal de 3 bits con codificación binaria directa en la entrada. Se puede observar que la salida analógica es cero cuando el código de entrada es todo ceros. A medida que el código de entrada digital aumenta, la salida analógica incrementa 1 LSB (equivalente a 1/8 de la escala en este caso) por cada cambio de código. El voltaje de salida más alto es de 7/8 de la escala completa (FS), lo que corresponde a un valor de FS - 1 LSB. La salida a mitad de escala, equivalente a 1/2 FS, se produce cuando el código de entrada digital es 100.
 
     \begin{figure}[!h]
@@ -455,6 +459,8 @@ Dado que la primera mitad del periodo del reloj SPI es 0, el valor en SCLK perma
     La función de transferencia de un ADC ideal de 3 bits se ilustra en la Figura \ref{fig:adc_dac_3bits}. En este caso, existe un rango de voltaje de entrada analógico dentro del cual el ADC genera un código de salida específico; este rango, conocido como \textit{incertidumbre de cuantización}, es equivalente a 1 LSB. Es importante destacar que, en un ADC ideal, la amplitud de las regiones de transición entre códigos adyacentes es cero. No obstante, en la práctica, siempre hay ruido de transición asociado a estos niveles, lo que provoca que la amplitud no sea nula. Por convención, la entrada analógica correspondiente a un código determinado se define por el \textit{centro del código}, ubicado a medio camino entre dos regiones de transición adyacentes (representado por los puntos negros en el diagrama). Esto implica que la primera región de transición se produce a $1/2$ LSB. El voltaje de entrada analógico de escala completa se establece en 7/8 FS (FS - 1 LSB).
 
     Otro código que merece ser mencionado es el código Gray (o binario reflejado). El equivalente del código binario directo de 4 bits en código Gray también se ilustra en la Tabla \ref{tab:adc_codigos_unipolares}. Aunque su uso en aritmética de computadoras es poco común, el código Gray posee propiedades que lo hacen útil en la conversión A/D. Una característica destacada es que, en el código Gray, cuando el valor del número cambia, las transiciones de un código al siguiente afectan solo a un bit a la vez. Esto es en contraste con el código binario, donde todos los bits cambian en la transición entre 0111 y 1000. Algunos ADCs lo emplean de manera interna y luego lo convierten a código binario para su uso externo.
+
+    \subsection{Códigos binarios}
 
     En muchos sistemas, es deseable representar cantidades analógicas tanto positivas como negativas mediante códigos binarios. Existen varios métodos para lograr esto, como el binario con desplazamiento, el complemento a dos, el complemento a uno o la magnitud con signo, aunque los más comunes son el binario con desplazamiento y el complemento a dos. Las relaciones entre estos códigos para un sistema de 4 bits se ilustran en la Tabla \ref{tab:codigos_bipolares}. Es importante destacar que los valores están ajustados para un rango de voltaje de entrada/salida de $\pm 5$ V en escala completa.
 
@@ -491,12 +497,25 @@ Dado que la primera mitad del periodo del reloj SPI es 0, el valor en SCLK perma
 
     En el sistema binario con desplazamiento, el valor de señal cero se asigna al código 1000. La secuencia de códigos es idéntica a la del binario directo, siendo la única diferencia el desplazamiento de media escala asociado a la señal analógica. El valor más negativo (–FS + 1 LSB) se representa con el código 0001, mientras que el valor más positivo (+FS – 1 LSB) se representa con el código 1111. Es importante señalar que, para mantener una simetría perfecta alrededor de la mitad de la escala, el código de todos ceros (0000), que representa la escala completa negativa (–FS), generalmente no se utiliza en los cálculos. Puede emplearse para indicar una condición de fuera de rango negativa o asignarse simplemente el valor de 0001 (–FS + 1 LSB).
 
+
+    La relación entre el código binario con desplazamiento y el rango de salida analógica de un DAC bipolar de 3 bits se muestra en la Figura \ref{fig:adc_dac_3bits_offset}. La salida analógica del DAC es cero cuando el código de entrada es 100. El voltaje de salida más negativo suele estar definido por el código 001 (–FS + 1 LSB), mientras que el más positivo lo define el código 111 (+FS – 1 LSB). El voltaje de salida correspondiente al código de entrada 000 se puede utilizar si se desea, pero esto provoca que la salida no sea simétrica respecto al cero y complica los cálculos.
+
+    El código de salida binario con desplazamiento para un ADC bipolar de 3 bits, en función de su entrada analógica, se muestra en la Figura \ref{fig:adc_dac_3bits_offset}. Es importante señalar que la entrada analógica cero define el centro del código de mitad de escala, que es 100. Al igual que en los DACs bipolares, el voltaje de entrada más negativo está definido por el código 001 (–FS + 1 LSB), mientras que el más positivo lo define el código 111 (+FS – 1 LSB). Como se mencionó anteriormente, el código de salida 000 está disponible para su uso si se desea, pero esto provoca que la salida no sea simétrica respecto al cero y complica los cálculos matemáticos
+
+    \begin{figure}[!h]
+      \centering
+      \includegraphics[width=0.95\textwidth]{adc_dac_3bits_offset}
+      \caption{Funciones de transferencia para un DAC y ADC bipolares ideales de 3 bits.}
+      \label{fig:adc_dac_3bits_offset}
+    \end{figure}
+
     El complemento a dos es idéntico al binario con desplazamiento, con la diferencia de que el bit más significativo (MSB) se invierte. Esto es muy fácil de implementar en un conversor de datos mediante un inversor simple o utilizando la salida complementaria de un flip-flop tipo D. La popularidad del complemento a dos radica en la facilidad con la que se pueden realizar operaciones matemáticas en computadoras y procesadores DSP. En términos de conversión, el complemento a dos se compone de un código binario para magnitudes positivas (bit de signo 0) y el complemento a dos de cada número positivo para representar su equivalente negativo. El complemento a dos se forma aritméticamente invirtiendo el número y sumando 1 LSB. Por ejemplo, para obtener –3/8 de FS, se toma el complemento a dos de +3/8 de FS. Primero se invierte +3/8 de FS, es decir, 0011, obteniendo 1100. Luego, al sumar 1 LSB, obtenemos 1101. El complemento a dos simplifica las operaciones de resta. Por ejemplo, para restar 3/8 de FS de 4/8 de FS, se suma 4/8 a –3/8, es decir, se suman 0100 y 1101. El resultado es 0001, que equivale a 1/8, ignorando el acarreo adicional.
 
     El complemento a uno también puede emplearse para representar números negativos, aunque es mucho menos común que el complemento a dos y su uso es raro en la actualidad. El complemento a uno se obtiene simplemente invirtiendo todos los dígitos de un número positivo. Por ejemplo, el complemento a uno de 3/8 FS (0011) es 1100. Un código con complemento a uno se forma invirtiendo cada valor positivo para generar su valor negativo correspondiente. Esto incluye el cero, que puede representarse con dos códigos: 0000 (conocido como 0+) o 1111 (conocido como 0–). Esta ambigüedad debe resolverse matemáticamente, lo que presenta problemas obvios para los ADCs y DACs, donde solo existe un código para representar el valor cero.
 
     La representación de magnitud con signo podría parecer la forma más sencilla de expresar digitalmente cantidades analógicas con signo. Consiste simplemente en determinar el código adecuado para la magnitud y añadir un bit de polaridad. El sistema BCD de magnitud con signo es común en voltímetros digitales bipolares, pero presenta el problema de tener dos códigos posibles para representar el valor cero. Por este motivo, no es muy popular en la mayoría de las aplicaciones que involucran ADCs o DACs.
 
+    \subsection{Resolución}
 
     Lo más importante a tener en cuenta sobre los DACs y ADCs es que, ya sea la entrada o la salida, es digital, lo que significa que la señal está cuantizada. En otras palabras, una palabra de N bits representa uno de los $2^N$ estados posibles. Por lo tanto, un DAC de N bits (con una referencia fija) solo puede generar $2^N$ salidas analógicas posibles, y un ADC de N bits solo puede producir $2^N$ salidas digitales. Como se mencionó anteriormente, las señales analógicas generalmente serán voltajes o corrientes.
 
@@ -514,6 +533,8 @@ Dado que la primera mitad del periodo del reloj SPI es 0, el valor en SCLK perma
     \end{figure}
 
     La entrada de un ADC es analógica y no está cuantizada, mientras que su salida sí lo está. Por ello, la característica de transferencia se representa mediante ocho escalones horizontales. Para analizar el desplazamiento, la ganancia y la linealidad de un ADC, se considera la línea que une los puntos medios de estos escalones, conocidos habitualmente como los \textit{centros de código}.
+
+    \subsection{Errores en los convertidores}
 
     En los DACs y ADCs, la escala completa digital (todos los bits en 1) corresponde a 1 LSB por debajo de la escala completa analógica (FS). Las transiciones ideales en un ADC ocurren a 1/2 LSB por encima de cero y, a partir de ahí, en cada LSB hasta llegar a $1 \frac{1}{2}$ LSB por debajo de la escala completa analógica. Como la entrada analógica de un ADC puede tomar cualquier valor, mientras que la salida digital está cuantizada, puede haber una diferencia de hasta 1/2 LSB entre la entrada analógica real y el valor exacto de la salida digital. Este fenómeno se conoce como \textit{error de cuantización} o \textit{incertidumbre de cuantización}, como se muestra en la Figura \ref{fig:funcion_de_transferencia}. En aplicaciones de señal alterna (muestreo), este error de cuantización genera ruido de cuantización.
 
@@ -544,22 +565,83 @@ Dado que la primera mitad del periodo del reloj SPI es 0, el valor en SCLK perma
 
     En un DAC, no puede haber códigos faltantes, ya que cada palabra de entrada digital producirá una salida analógica correspondiente. Sin embargo, los DACs pueden ser no monótonos, como se mencionó anteriormente. En un DAC binario directo, el punto más probable para que ocurra una condición de no monotonía es en la mitad de la escala, entre los códigos 011...11 y 100...00. Si se produce una condición de no monotonía en este punto, generalmente se debe a que el DAC no está calibrado o ajustado correctamente. Un ADC de aproximación sucesiva con un DAC interno no monótono normalmente generará códigos faltantes, pero seguirá siendo monótono. Sin embargo, es posible que un ADC sea no monótono, dependiendo de la arquitectura de conversión específica.
 
-    \begin{table}[h!]
+   
+    %\subsection{Especificaciones generales de un convertidor}
+
+
+  \subsection{Convertidores Analógico-Digitales}
+
+
+Las arquitecturas de Conversores Analógico-Digital (ADC) juegan un papel fundamental en la digitalización de señales analógicas, permitiendo la conversión de señales continuas en una representación discreta para su posterior procesamiento digital. En esta sección, se presentan las principales arquitecturas de ADC, incluyendo sus ventajas, desventajas y aplicaciones más comunes. Posteriormente, se realizará una comparación detallada entre estas arquitecturas.
+
+
+\subsubsection{Convertidor Flash}
+
+El convertidor Flash es la arquitectura de ADC más rápida disponible en la actualidad, ya que realiza la conversión en un solo ciclo. Este tipo de convertidor utiliza $2^{N}-1$ comparadores para realizar la conversión directa de una señal analógica en un código digital de N bits. Cada comparador está polarizado con un valor de referencia que representa una fracción del rango completo de la señal analógica, típicamente espaciada en pasos de un bit menos significativo (LSB). En el caso de un convertidor Flash de 4 bits, la señal analógica se compara simultáneamente con 15 valores de referencia mediante 15 comparadores.
+
+Una de las principales ventajas de los ADC Flash es su alta velocidad, ya que la conversión se lleva a cabo en un solo ciclo. Esto los convierte en la elección preferida para aplicaciones de alta velocidad, como en sistemas de comunicaciones y en aplicaciones de captura de imágenes  donde el tiempo de conversión es crucial. Sin embargo, la desventaja más significativa de los ADC Flash es la cantidad exponencial de comparadores necesarios para aumentar la resolución. Por ejemplo, un ADC de 8 bits requiere 255 comparadores, mientras que uno de 16 bits necesitaría 65,535 comparadores, lo que hace que esta arquitectura sea poco práctica para resoluciones más altas debido a la complejidad del diseño, el alto consumo de energía y el coste.
+
+\subsubsection{Convertidor Pipeline}
+
+El convertidor Pipeline (o de etapas en cascada) resuelve algunas de las limitaciones del ADC Flash, dividiendo el proceso de conversión en varias etapas secuenciales. Cada una de estas etapas incluye un circuito de retención y muestreo, un ADC de $m$ bits (generalmente de tipo Flash), un DAC de $m$ bits. Primero, el circuito de muestreo y retención de la primera etapa adquiere la señal. Luego, el convertidor flash de m bits convierte la señal muestreada en datos digitales. El resultado de la conversión forma los bits más significativos de la salida digital. Esta misma salida digital se introduce en un convertidor digital-analógico de $m$ bits, y su salida se resta de la señal original muestreada. La señal analógica residual se amplifica y se envía a la siguiente etapa de la cadena para ser muestreada y convertida de manera similar a la primera etapa. Este proceso se repite en tantas etapas como sean necesarias para lograr la resolución deseada. En principio, un convertidor en pipeline con $p$ etapas, cada una con un convertidor flash de $m$ bits, puede producir un ADC de alta velocidad con una resolución de $R = p \times m $ bits, utilizando $p \times (2^m - 1)$ comparadores.
+
+Una ventaja clave de los ADCs Pipeline es que permiten obtener resoluciones más altas que los ADCs Flash sin requerir un número exponencial de comparadores. Por ejemplo, un ADC de Pipeline con dos etapas de 8 bits requiere solo 30 comparadores en lugar de los 255 que necesitaría un ADC Flash de 8 bits. Además, los convertidores Pipeline pueden alcanzar tasas de conversión comparables a los ADCs Flash, ya que las etapas posteriores pueden procesarse de manera simultánea con diferentes señales, maximizando el rendimiento. Sin embargo, una desventaja de los ADC Pipeline es la latencia igual a $p$ ciclos introducida por las múltiples etapas, lo que los hace menos adecuados para aplicaciones que requieren una conversión inmediata.
+
+
+\subsubsection{Convertidor de Aproximaciones Sucesivas (SAR)}
+
+El convertidor de Aproximaciones Sucesivas (SAR) sigue un principio de funcionamiento diferente al del ADC Flash. En lugar de realizar todas las comparaciones de manera simultánea, el ADC SAR emplea un único comparador que realiza una serie de comparaciones secuenciales. El proceso comienza comparando la señal analógica con la mitad de la escala completa (correspondiente al bit más significativo) y, en función del resultado, retiene o descarta ese valor. El proceso se repite para los siguientes bits de menor peso, reduciendo progresivamente el rango de comparación hasta alcanzar la resolución deseada.
+
+La arquitectura SAR es eficiente en términos de hardware, ya que requiere solo un comparador y un DAC de alta precisión para generar los niveles de referencia. Sin embargo, debido a que el ADC SAR necesita $N$ ciclos de comparación para resolver una conversión de $N$ bits, su velocidad es inferior a la de los ADCs Flash y Pipeline. A pesar de ello, el ADC SAR es ideal para aplicaciones de alta resolución y baja velocidad, como la adquisición de señales no periódicas o señales que requieren alta precisión, como en la instrumentación médica. Además, el ADC SAR es altamente eficiente en términos de consumo de energía y es una opción común en aplicaciones de bajo consumo.
+
+
+\subsubsection{Convertidor Sigma-Delta}
+
+El convertidor Sigma-Delta ($\Sigma \Delta$) emplea un enfoque completamente diferente al de las arquitecturas anteriores. En lugar de realizar una conversión directa de la señal analógica en un número binario, el ADC Sigma-Delta sobreamuestrea la señal analógica y la convierte en una secuencia de bits a través de un proceso de integración y comparación. Este flujo de bits se procesa mediante un filtro digital y se decima para obtener una salida digital de alta resolución.
+
+El Sigma-Delta es la arquitectura preferida para aplicaciones que requieren alta resolución y bajo ancho de banda, como la medición de precisión en instrumentos científicos. Una de las principales ventajas del ADC Sigma-Delta es su capacidad para mitigar el ruido de baja frecuencia mediante el modelado de ruido, desplazando gran parte de ese ruido a frecuencias más altas, fuera de la banda de interés. Además, debido al alto índice de sobremuestreo, la necesidad de filtros anti-alias externos se reduce significativamente. Sin embargo, una de las limitaciones del ADC Sigma-Delta es su alta latencia, lo que lo hace inadecuado para aplicaciones de respuesta rápida o señales multiplexadas.
+
+\subsubsection{Comparación entre las Arquitecturas de ADC}
+
+En la Tabla \ref{tab:adcs_comparacion} se presenta una comparación detallada entre las principales arquitecturas de ADC en función de parámetros clave como la velocidad, resolución, latencia, complejidad de diseño y adecuación para aplicaciones específicas.
+
+ \begin{table}[h!]
+      \caption{Comparación entre arquitecturas de ADC.}
+      \begin{center}
+      \resizebox{\textwidth}{!}{
+        \begin{NiceTabular}{|c|c|c|c|c|c|}
+       \hline
+        \textbf{Arquitectura} & \textbf{Velocidad} & \textbf{Resolución} & \textbf{Latencia} & \textbf{Complejidad} & \textbf{Aplicación Ideal} \\
+        \hline
+        Flash & Muy alta & Baja & Muy baja & Muy alta & Sistemas de alta velocidad (telecomunicaciones) \\
+        Pipeline & Alta & Media-alta & Media & Alta & Alta resolución con alta velocidad (imagen, radar) \\
+        SAR & Media & Alta & Baja & Baja & Instrumentación de precisión, adquisición de datos \\
+        Sigma-Delta & Baja & Muy alta & Alta & Media-alta & Medición de precisión, instrumentos científicos \\
+        \hline
+        \end{NiceTabular}
+      }
+      \label{tab:adcs_comparacion}
+      \end{center}
+    \end{table}
+
+La Tabla \ref{tab:adc_resumen} resume y clasifica (de manera general) las ventajas relativas de las arquitecturas flash, pipeline, SAR y sigma-delta. Una clasificación de 1 en una categoría de rendimiento indica que la arquitectura es inherentemente superior a las demás en esa categoría. Un * indica que la arquitectura posee la capacidad o característica mencionada.
+
+ \begin{table}[h!]
       \caption{Resumen de tipos de ADC.}
       \begin{center}
       \resizebox{\textwidth}{!}{
         \begin{NiceTabular}{|c|c|c|c|c|}
           \hline
-          \textbf{Characteristic} & \textbf{Flash} & \textbf{Pipelined} & \textbf{SAR} & \textbf{Sigma-Delta}\\ 
+          \textbf{Características} & \textbf{Flash} & \textbf{Pipelined} & \textbf{SAR} & \textbf{Sigma-Delta}\\ 
           \hline
-          Throughput & 1 & 2 & 3 & 4 \\ 
-          Resolution (ENOB) & 4 & 3 & 2 & 1 \\ 
-          Latency & 1 & 3 & 2 & 4 \\ 
-          Suitability for converting multiple signals per ADC & 1 & 2 & 1 & 3 \\ 
-          Capability to convert non-periodic multiplexed signals & 1 & 2 & 1 & 3 \\ 
-          Simplified anti-aliasing &  &  &  & $\star$ \\ 
-          Can undersample & $\star$ & $\star$ & $\star$ &  \\ 
-          Can increase resolution through averaging (with dither noise) & $\star$ & $\star$ & $\star$ &  \\ 
+           Rendimiento & 1 & 2 & 3 & 4 \\ 
+           Resolución  & 4 & 3 & 2 & 1 \\ 
+           Latencia & 1 & 3 & 2 & 4 \\ 
+           Adecuación para convertir múltiples señales por ADC & 1 & 2 & 1 & 3 \\ 
+           Capacidad para convertir señales multiplexadas no periódicas & 1 & 2 & 1 & 3 \\ 
+           Antialiasing simplificado &  &  &  & $\star$ \\ 
+           Puede realizar submuestreo & $\star$ & $\star$ & $\star$ &  \\ 
+           Puede aumentar la resolución mediante promediado (con ruido de trémulo) & $\star$ & $\star$ & $\star$ &  \\
           \hline
         \end{NiceTabular}
       }
@@ -567,12 +649,6 @@ Dado que la primera mitad del periodo del reloj SPI es 0, el valor en SCLK perma
       \end{center}
     \end{table}
 
-
-  \section{Convertidores Digitales-Analógico}
-
-    \subsection{Visión general}
+La elección de la arquitectura adecuada depende en gran medida de los requisitos específicos de la aplicación. Por ejemplo, en aplicaciones donde se requiere una alta tasa de muestreo, como en comunicaciones o adquisición de imágenes, los convertidores Flash o Pipeline son ideales debido a su alta velocidad de conversión. Por otro lado, si se necesita alta resolución con señales de bajo ancho de banda, como en la instrumentación de precisión, los convertidores Sigma-Delta son la opción más adecuada. Los convertidores SAR, por su parte, son ideales para aplicaciones que requieren alta precisión con un coste relativamente bajo y bajo consumo de energía.
 
 
-
-
-	
