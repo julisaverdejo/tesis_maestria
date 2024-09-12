@@ -186,7 +186,7 @@
 
     A través de la línea serial no se transmite información de reloj. Antes de iniciar la transmisión, el transmisor y el receptor deben acordar de antemano una serie de parámetros, que incluyen la velocidad en baudios (es decir, el número de bits por segundo), el número de bits de datos y bits de parada, y el uso del bit de paridad. Con los parámetros predeterminados, el receptor utiliza un esquema de sobremuestreo para recuperar los bits de datos. Las velocidades en baudios más utilizadas son 9,600 y 19,200 baudios.
 
-    \subsection{Procedimiento de sobremuestreo}
+    \subsection{Procedimiento de sobremuestreo} \label{sec:sobremuestreo}
 
     La velocidad de muestreo más utilizada es 16 veces la velocidad en baudios, lo que significa que cada bit serie se muestrea 16 veces. Para un enlace de comunicación con N bits de datos y M bits de parada, el esquema de sobremuestreo funciona de la siguiente manera:
     
@@ -204,7 +204,7 @@
 
     \subsection{Diseño conceptual}
 
-      El diagrama de alto nivel de un sistema UART se muestra en la Figura \ref{fig:uart_diagram}. Consiste en tres componentes principales. El generador de la tasa de baudios genera una señal de sobremuestreo. El receptor realiza la conversión de serie a paralelo y el transmisor realiza la conversión de paralelo a serie.
+      El diagrama de alto nivel de un sistema UART se muestra en la Figura \ref{fig:uart_diagram}. Consiste en tres componentes principales. El generador de la tasa de baudios genera una señal de sobremuestreo. El receptor realiza la conversión de serie a paralelo y el transmisor realiza la conversión de paralelo a serie. El código completo integrando los tres componentes se muestra en el Código \ref{cod:uart_ip}.
 
     \begin{figure}[h!]
       \centering
@@ -222,6 +222,8 @@
     \subsection{Receptor UART}
 
     El receptor UART obtiene el byte de datos de la línea serial mediante sobremuestreo. Utiliza la señal del generador de la tasa de baudios para estimar los puntos medios de los bits transmitidos y, a continuación, los recupera en esos puntos de manera precisa.
+    
+    La operación general de recepción se puede describir mediante un diagrama ASMD, como se muestra en la Figura \ref{fig:asmd_uart_rx}. Para permitir futuras modificaciones, se utilizan dos parámetros en la descripción. El parámetro D\_BIT indica el número de bits de datos, mientras que SB\_TICK representa el número de "ticks" necesarios para los bits de parada, que son 16, 24 y 32 para 1, 1.5 y 2 bits de parada, respectivamente. En este diseño, a D\_BIT y SB\_TICK se les asignaron los valores 8 y 16.
 
     \begin{figure}[hbtp]
       \centering
@@ -230,7 +232,15 @@
       \label{fig:asmd_uart_rx}
     \end{figure}
 
+    El diagrama sigue los pasos explicados en la Sección \ref{sec:sobremuestreo} e incluye tres estados principales: \textbf{START}, \textbf{DATA} y \textbf{STOP}, que representan el procesamiento del bit de inicio, los bits de datos y el bit de parada. La señal s\_tick es el tick de habilitación proveniente del generador de tasa de baudios, con 16 ticks en cada intervalo de bits. Es importante señalar que el FSMD permanece en el mismo estado a menos que se active la señal s\_tick. Existen dos contadores, representados por los registros s y n. El registro s lleva la cuenta de los ticks de muestreo, contando hasta 7 en el estado de START, hasta 15 en el estado de DATA, y hasta SB\_TICK en el estado de STOP. El registro n cuenta el número de bits de datos recibidos en el estado de DATA. Los bits recuperados se desplazan y se reensamblan en el registro b. Se incluye una señal de estado, rx\_done\_tick, que se activa durante un ciclo de reloj al finalizar el proceso de recepción. El código correspondiente se encuentra en el Código \ref{cod:uart_rx}.
+
     \subsection{Transmisor UART}
+    
+    La estructura de un subsistema de transmisión UART es similar a la del subsistema de recepción. Está compuesto por un transmisor UART y un generador de tasa de baudios.
+    
+    El transmisor UART es, en esencia, un registro de desplazamiento que envía los bits de datos a una velocidad específica. Esta velocidad puede ser controlada mediante ticks de habilitación de un solo ciclo de reloj generados por el generador de tasa de baudios. Como no se utiliza sobremuestreo, la frecuencia de los ticks es 16 veces más lenta que la del receptor UART. En lugar de introducir un nuevo contador, el transmisor UART suele compartir el generador de tasa de baudios del receptor y utiliza un contador interno para llevar el control de los ticks de habilitación. Se desplaza un bit cada 16 ticks de habilitación.
+    
+    El diagrama ASMD del transmisor UART es similar al del receptor UART. Tras la activación de la señal tx\_start, el FSMD carga la palabra de datos y avanza progresivamente por los estados de \textbf{START}, \textbf{DATA} y \textbf{STOP} para enviar los bits correspondientes. Al completar el proceso, se indica mediante la señal tx\_done\_tick, que se activa durante un ciclo de reloj. Se emplea un búfer de 1 bit, tx\_reg, para filtrar posibles fallos o errores. El código correspondiente se encuentra en el Código \ref{cod:uart_tx}.
 
 	\section{Controlador SPI}
 
@@ -367,23 +377,200 @@ Dado que la primera mitad del periodo del reloj SPI es 0, el valor en SCLK perma
 
     \subsection{Visión general}
 
-    Los convertidores analógico-digitales (ADC) traducen las magnitudes analógicas, características de la mayoría de los fenómenos del mundo real, a lenguaje digital, utilizado en el procesamiento de la información, la informática, la transmisión de datos y los sistemas de control \cite{Kester2007}.
+    Los convertidores analógico-digitales (ADC) traducen las magnitudes analógicas, características de la mayoría de los fenómenos del mundo real, a lenguaje digital, utilizado en el procesamiento de la información, la informática, la transmisión de datos y los sistemas de control. Los convertidores de digital-analógico (DAC) se utilizan para transformar los datos transmitidos o almacenados, o los resultados del procesamiento digital, de nuevo en variables del mundo real para su control, visualización de información o procesamiento analógico posterior \cite{Kester2007}.
 
     Las variables de entrada analógicas, independientemente de su su origen, suelen ser convertidas mediante transductores en voltajes o corrientes. Estas magnitudes eléctricas pueden manifestarse de las siguientes formas: (1) como mediciones directas y continuas de corriente continua (DC) que pueden ser rápidas o lentas, representando un fenómeno en el dominio del tiempo, (2) como formas de onda de corriente alterna (AC) moduladas mediante diversas técnicas de modulación, (3) o en una combinación de ambas. Ejemplos del primer tipo incluyen las salidas de termopares, potenciómetros en referencias de corriente continua (DC); del segundo tipo, mediciones ópticas moduladas, puentes de corriente alterna (AC), y señales digitales sumergidas en ruido.
 
     Las variables analógicas a tratar son aquellas que involucran voltajes o corrientes que representan fenómenos analógicos reales. Estas pueden ser de banda ancha o banda estrecha, y pueden ser escaladas a partir de la medición directa o sometidas a algún tipo de preprocesamiento analógico, como la linealización, combinación, demodulación, filtrado, retención de muestras, entre otros.
 
-    Como parte de este proceso, los voltajes y corrientes se ajustan o normalizan para que sean compatibles con los rangos de entrada asignados del ADC.
+    Como parte del proceso, los voltajes y corrientes se normalizan a rangos compatibles con los rangos de entrada asignados al ADC. Las salidas analógicas de voltaje o corriente de los DACs se generan de forma directa y en formato normalizado, aunque pueden ser procesadas posteriormente (por ejemplo, escaladas, filtradas, amplificadas, etc.)
 
     La información en forma digital se representa normalmente mediante niveles de voltaje arbitrariamente fijos referidos a tierra, ya sea en las salidas de las compuertas lógicas o aplicados a sus entradas. Los números digitales utilizados son básicamente binarios; es decir, cada bit o unidad de información tiene uno de dos posibles estados. Estos estados son apagado, falso, o 0, y encendido, verdadero, o 1. También es posible representar los dos estados lógicos mediante dos niveles diferentes de corriente; sin embargo, esto es mucho menos común que el uso de voltajes. Tampoco es necesario que los voltajes estén referidos a tierra, como en el caso de la lógica acoplada por emisor (ECL), la lógica acoplada por emisor positiva (PECL) o la lógica de señalización diferencial de bajo voltaje (LVDS).
 
-    {\color{red} Las palabras o Words son grupos de niveles que representan números digitales. Estos niveles pueden presentarse de forma simultánea en paralelo, en un bus o en grupos de entradas o salidas de compuertas, de forma serial (es decir, en una secuencia temporal) en una única línea, o como una secuencia de bytes paralelos ("serial por bytes") o nibbles (porciones más pequeñas de bytes). Por ejemplo, una palabra de 16 bits puede ocupar los 16 bits de un bus de 16 bits, dividirse en dos bytes secuenciales para un bus de 8 bits, o en cuatro nibbles de 4 bits para un bus de 4 bits.}
+    Una palabra o \textit{Word} en inglés, es grupo de niveles que representan un número digital. Estos niveles pueden presentarse de forma simultánea en \textit{paralelo}, en un bus o en grupos de entradas o salidas de compuertas, de forma \textit{serial} (es decir, en una secuencia temporal) en una única línea, o como una secuencia de bytes paralelos (serial por bytes) o nibbles (porciones más pequeñas de bytes). Por ejemplo, una palabra de 16 bits puede ocupar los 16 bits de un bus de 16 bits, dividirse en dos bytes secuenciales para un bus de 8 bits, o en cuatro nibbles de 4 bits para un bus de 4 bits.
+
+    A cada nivel analógico cuantificado (es decir, que representa una porción única del rango analógico) se le asigna una agrupación, ya sea paralelo o en serie única de niveles digitales, o un \textit{número} o \textit{código}. Un código digital típico sería el siguiente arreglo:
+
+    \begin{equation}
+      a_{7} \; a_{6} \; a_{4} \; a_{3} \; a_{2} \; a_{1} \; a_{0} = 1 \; 0 \; 1 \; 1 \; 1 \; 0 \; 0 \; 1
+    \end{equation}
+
+    Está compuesto por ocho bits. El ``1'' en el extremo izquierdo se denomina ``bit más significativo'' (MSB, o Bit 1), mientras que el del extremo derecho se llama ``bit menos significativo'' (LSB, o Bit N: 8 en este caso). El significado del código, ya sea como un número, un carácter o una representación de una variable analógica, no se conoce hasta que se defina tanto el \textit{código} como su \textit{relación de conversión}. Es importante no confundir la designación de un bit específico (como Bit 1, Bit 2, etc.) con los subíndices asociados al arreglo ``a''. Estos subíndices corresponden a la potencia de 2 vinculada al peso de cada bit dentro de la secuencia.
+
+    El código más conocido, aparte del sistema decimal (base 10), es el binario natural o directo (base 2). Los códigos binarios son más utilizados para representar números enteros. En un código binario natural de N bits, el LSB tiene un peso de $2^{0}$ (es decir, 1), el siguiente bit tiene un peso de $2^{1}$ (o 2), y así sucesivamente hasta llegar al MSB, cuyo peso es de $2^{N-1}$ (o $2^{N} / 2$). El valor de un número binario se obtiene sumando los pesos de todos los bits no nulos. Cuando estos bits ponderados se suman, forman un número único que puede variar entre 0 y $2^{N} -1$. Cada bit adicional en cero al final, si existe, esencialmente duplica el tamaño del número.
+
+    En la tecnología de convertidores, el valor de escala completa (abreviado como FS) es independiente del número de bits de resolución, N. Un sistema de codificación más práctico es el binario fraccionario, que siempre se normaliza a la escala completa. El binario entero puede interpretarse como binario fraccionario dividiendo todos los valores enteros por $2^{N}$. Por ejemplo, el MSB tiene un peso de $1/2$ (es decir, $2^{(N-1)}/2^{N}= 2^{-1}$), el siguiente bit tiene un peso de $1/4$ (o $2^{-2}$), y así sucesivamente hasta el LSB, que tiene un peso de $1/2^{N}$ (o $2^{-N}$). Al sumar los bits ponderados, se obtiene un número con cualquiera de los $2^{N}$ valores, que van desde 0 hasta ($1 - 2^{-N}$) de la escala completa. Los bits adicionales simplemente añaden mayor detalle sin modificar el rango de la escala completa. La relación entre los números en base 10 y los números binarios (base 2) se ilustra en las siguientes ecuaciones:
+
+    \begin{equation}
+      \text{Numbero entero}_{\;10} = \underbrace{a_{N-1} 2^{N-1}}_{\text{MSB}}  + a_{N-2} 2^{N-2} + \ldots + a_{1} 2^{1} + \underbrace{a_{0} 2^{0}}_{\text{LSB}} 
+    \end{equation}
+
+    \begin{equation}
+      \text{Numbero fraccionario}_{\;10} = \underbrace{a_{N-1} 2^{-1}}_{\text{MSB}}  + a_{N-2} 2^{-2} + \ldots + a_{1} 2^{-(N-1)} + \underbrace{a_{0} 2^{-N}}_{\text{LSB}} 
+    \end{equation}
+
+  
+    En los sistemas de conversión de datos, el método de codificación debe estar relacionado con el rango de entrada analógica (o intervalo) de un ADC, o con el rango de salida analógica de un DAC. El caso más sencillo ocurre cuando la entrada del ADC o la salida del DAC es una tensión unipolar positiva (aunque las salidas de corriente son comunes en los DACs, no lo son tanto en las entradas de ADCs). El código más utilizado para este tipo de señal es el binario directo, como se muestra en la Tabla \ref{tab:adc_codigos_unipolares} para un convertidor de 4 bits. Como se puede observar, existen 16 niveles distintos posibles, desde el código 0000 (todos ceros) hasta el código 1111 (todos unos). Es importante destacar que el valor analógico representado por el código de todos unos no corresponde a la escala completa (FS), sino a FS menos 1 LSB. Esta es una convención común en la notación de conversión de datos, aplicable tanto a ADCs como a DACs. La Tabla \ref{tab:adc_codigos_unipolares} muestra el número equivalente en base 10, el valor del código binario en base 2 en relación a la escala completa (FS), y el nivel de voltaje correspondiente para cada código (suponiendo un convertidor de escala completa de 10 V). También se muestra el código Gray equivalente, que será discutido más adelante
+
+    \begin{table}[h!]
+      \caption{Códigos binarios unipolares, convertidor de 4 bits.}
+      \begin{center}
+      \resizebox{\textwidth}{!}{
+        \begin{NiceTabular}{|c|c|c|c|c|}
+        \hline
+          \textbf{Número en base 10} & \textbf{Escala} & \textbf{+10V FS} & \textbf{Binario} & \textbf{Gray} \\ 
+        \hline
+        +15 & +FS – 1LSB = +15/16 FS & 9.375 & 1111 & 1000 \\ 
+        +14 & +7/8 FS & 8.750 & 1110 & 1001 \\ 
+        +13 & +13/16 FS & 8.125 & 1101 & 1011 \\ 
+        +12 & +3/4 FS & 7.500 & 1100 & 1010 \\ 
+        +11 & +11/16 FS & 6.875 & 1011 & 1110 \\ 
+        +10 & +5/8 FS & 6.250 & 1010 & 1111 \\ 
+        +9 & +9/16 FS & 5.625 & 1001 & 1101 \\ 
+        +8 & +1/2 FS & 5.000 & 1000 & 1100 \\ 
+        +7 & +7/16 FS & 4.375 & 0111 & 0100 \\ 
+        +6 & +3/8 FS & 3.750 & 0110 & 0101 \\ 
+        +5 & +5/16 FS & 3.125 & 0101 & 0111 \\ 
+        +4 & +1/4 FS & 2.500 & 0100 & 0110 \\ 
+        +3 & +3/16 FS & 1.875 & 0011 & 0010 \\ 
+        +2 & +1/8 FS & 1.250 & 0010 & 0011 \\ 
+        +1 & 1LSB = +1/16 FS & 0.625 & 0001 & 0001 \\ 
+        0 & 0 & 0.000 & 0000 & 0000 \\ 
+        \hline
+        \end{NiceTabular}
+      }
+      \label{tab:adc_codigos_unipolares}
+      \end{center}
+    \end{table}
+
+    La Figura \ref{fig:adc_dac_3bits} muestra la función de transferencia de un DAC ideal de 3 bits con codificación binaria directa en la entrada. Se puede observar que la salida analógica es cero cuando el código de entrada es todo ceros. A medida que el código de entrada digital aumenta, la salida analógica incrementa 1 LSB (equivalente a 1/8 de la escala en este caso) por cada cambio de código. El voltaje de salida más alto es de 7/8 de la escala completa (FS), lo que corresponde a un valor de FS - 1 LSB. La salida a mitad de escala, equivalente a 1/2 FS, se produce cuando el código de entrada digital es 100.
+
+    \begin{figure}[!h]
+      \centering
+      \includegraphics[width=0.95\textwidth]{adc_dac_3bits}
+      \caption{Funciones de transferencia para un DAC y ADC unipolares de 3 bits.}
+      \label{fig:adc_dac_3bits}
+    \end{figure}
+
+    La función de transferencia de un ADC ideal de 3 bits se ilustra en la Figura \ref{fig:adc_dac_3bits}. En este caso, existe un rango de voltaje de entrada analógico dentro del cual el ADC genera un código de salida específico; este rango, conocido como \textit{incertidumbre de cuantización}, es equivalente a 1 LSB. Es importante destacar que, en un ADC ideal, la amplitud de las regiones de transición entre códigos adyacentes es cero. No obstante, en la práctica, siempre hay ruido de transición asociado a estos niveles, lo que provoca que la amplitud no sea nula. Por convención, la entrada analógica correspondiente a un código determinado se define por el \textit{centro del código}, ubicado a medio camino entre dos regiones de transición adyacentes (representado por los puntos negros en el diagrama). Esto implica que la primera región de transición se produce a $1/2$ LSB. El voltaje de entrada analógico de escala completa se establece en 7/8 FS (FS - 1 LSB).
+
+    Otro código que merece ser mencionado es el código Gray (o binario reflejado). El equivalente del código binario directo de 4 bits en código Gray también se ilustra en la Tabla \ref{tab:adc_codigos_unipolares}. Aunque su uso en aritmética de computadoras es poco común, el código Gray posee propiedades que lo hacen útil en la conversión A/D. Una característica destacada es que, en el código Gray, cuando el valor del número cambia, las transiciones de un código al siguiente afectan solo a un bit a la vez. Esto es en contraste con el código binario, donde todos los bits cambian en la transición entre 0111 y 1000. Algunos ADCs lo emplean de manera interna y luego lo convierten a código binario para su uso externo.
+
+    En muchos sistemas, es deseable representar cantidades analógicas tanto positivas como negativas mediante códigos binarios. Existen varios métodos para lograr esto, como el binario con desplazamiento, el complemento a dos, el complemento a uno o la magnitud con signo, aunque los más comunes son el binario con desplazamiento y el complemento a dos. Las relaciones entre estos códigos para un sistema de 4 bits se ilustran en la Tabla \ref{tab:codigos_bipolares}. Es importante destacar que los valores están ajustados para un rango de voltaje de entrada/salida de $\pm 5$ V en escala completa.
+
+    \begin{table}[h!]
+      \caption{Códigos bipolares, convertidor de 4 bits.}
+      \begin{center}
+      \resizebox{\textwidth}{!}{
+        \begin{NiceTabular}{|c|c|c|c|c|c|c|}
+        \hline
+          \textbf{Número en base 10} & \textbf{Escala} & \textbf{$\pm$5V FS} & \textbf{Offset binary} & \textbf{Twos comp} & \textbf{Ones comp} & \textbf{Sign Mag} \\ 
+        \hline
+        +7 & +FS - 1LSB = +7/8 FS & +4.375 & 1111 & 0111 & 0111 & 0111 \\ 
+        +6 & +3/4 FS & +3.750 & 1110 & 0110 & 0110 & 0110 \\ 
+        +5 & +5/8 FS & +3.125 & 1101 & 0101 & 0101 & 0101 \\ 
+        +4 & +1/2 FS & +2.500 & 1100 & 0100 & 0100 & 0100 \\ 
+        +3 & +3/8 FS & +1.875 & 1011 & 0011 & 0011 & 0011 \\ 
+        +2 & +1/4 FS & +1.250 & 1010 & 0010 & 0010 & 0010 \\ 
+        +1 & +1/8 FS & +0.625 & 1001 & 0001 & 0001 & 0001 \\ 
+        0 & 0 & 0.000 & 1000 & 0000 & *0000 & *1000 \\ 
+        -1 & -1/8 FS & -0.625 & 0111 & 1111 & 1110 & 1001 \\ 
+        -2 & -1/4 FS & -1.250 & 0110 & 1110 & 1101 & 1010 \\ 
+        -3 & -3/8 FS & -1.875 & 0101 & 1101 & 1100 & 1011 \\ 
+        -4 & -1/2 FS & -2.500 & 0100 & 1100 & 1011 & 1100 \\ 
+        -5 & -5/8 FS & -3.125 & 0011 & 1011 & 1010 & 1101 \\ 
+        -6 & -3/4 FS & -3.750 & 0010 & 1010 & 1001 & 1110 \\ 
+        -7 & -FS + 1LSB = -7/8 FS & -4.375 & 0001 & 1001 & 1000 & 1111 \\ 
+        -8 & -FS & -5.000 & 0000 & 1000 &  &  \\ 
+        \hline
+        \end{NiceTabular}
+      }
+      \label{tab:codigos_bipolares}
+      \end{center}
+    \end{table}
+
+    En el sistema binario con desplazamiento, el valor de señal cero se asigna al código 1000. La secuencia de códigos es idéntica a la del binario directo, siendo la única diferencia el desplazamiento de media escala asociado a la señal analógica. El valor más negativo (–FS + 1 LSB) se representa con el código 0001, mientras que el valor más positivo (+FS – 1 LSB) se representa con el código 1111. Es importante señalar que, para mantener una simetría perfecta alrededor de la mitad de la escala, el código de todos ceros (0000), que representa la escala completa negativa (–FS), generalmente no se utiliza en los cálculos. Puede emplearse para indicar una condición de fuera de rango negativa o asignarse simplemente el valor de 0001 (–FS + 1 LSB).
+
+    El complemento a dos es idéntico al binario con desplazamiento, con la diferencia de que el bit más significativo (MSB) se invierte. Esto es muy fácil de implementar en un conversor de datos mediante un inversor simple o utilizando la salida complementaria de un flip-flop tipo D. La popularidad del complemento a dos radica en la facilidad con la que se pueden realizar operaciones matemáticas en computadoras y procesadores DSP. En términos de conversión, el complemento a dos se compone de un código binario para magnitudes positivas (bit de signo 0) y el complemento a dos de cada número positivo para representar su equivalente negativo. El complemento a dos se forma aritméticamente invirtiendo el número y sumando 1 LSB. Por ejemplo, para obtener –3/8 de FS, se toma el complemento a dos de +3/8 de FS. Primero se invierte +3/8 de FS, es decir, 0011, obteniendo 1100. Luego, al sumar 1 LSB, obtenemos 1101. El complemento a dos simplifica las operaciones de resta. Por ejemplo, para restar 3/8 de FS de 4/8 de FS, se suma 4/8 a –3/8, es decir, se suman 0100 y 1101. El resultado es 0001, que equivale a 1/8, ignorando el acarreo adicional.
+
+    El complemento a uno también puede emplearse para representar números negativos, aunque es mucho menos común que el complemento a dos y su uso es raro en la actualidad. El complemento a uno se obtiene simplemente invirtiendo todos los dígitos de un número positivo. Por ejemplo, el complemento a uno de 3/8 FS (0011) es 1100. Un código con complemento a uno se forma invirtiendo cada valor positivo para generar su valor negativo correspondiente. Esto incluye el cero, que puede representarse con dos códigos: 0000 (conocido como 0+) o 1111 (conocido como 0–). Esta ambigüedad debe resolverse matemáticamente, lo que presenta problemas obvios para los ADCs y DACs, donde solo existe un código para representar el valor cero.
+
+    La representación de magnitud con signo podría parecer la forma más sencilla de expresar digitalmente cantidades analógicas con signo. Consiste simplemente en determinar el código adecuado para la magnitud y añadir un bit de polaridad. El sistema BCD de magnitud con signo es común en voltímetros digitales bipolares, pero presenta el problema de tener dos códigos posibles para representar el valor cero. Por este motivo, no es muy popular en la mayoría de las aplicaciones que involucran ADCs o DACs.
+
+
+    Lo más importante a tener en cuenta sobre los DACs y ADCs es que, ya sea la entrada o la salida, es digital, lo que significa que la señal está cuantizada. En otras palabras, una palabra de N bits representa uno de los $2^N$ estados posibles. Por lo tanto, un DAC de N bits (con una referencia fija) solo puede generar $2^N$ salidas analógicas posibles, y un ADC de N bits solo puede producir $2^N$ salidas digitales. Como se mencionó anteriormente, las señales analógicas generalmente serán voltajes o corrientes.
+
+    La resolución de los convertidores de datos puede expresarse de diversas maneras: en términos del peso del bit menos significativo (LSB), en partes por millón de la escala completa (ppm FS), en milivoltios (mV), entre otros. Dado que los dispositivos, incluso los provenientes del mismo fabricante, pueden tener especificaciones diferentes, los usuarios de convertidores deben aprender a interpretar y convertir entre estos distintos tipos de especificaciones para poder comparar dispositivos con éxito.
+
+    Antes de analizar las distintas arquitecturas utilizadas en los convertidores de datos, es necesario evaluar el rendimiento que se puede esperar y las especificaciones que resultan importantes. En las siguientes secciones se abordará la definición de los errores y las especificaciones asociadas a los convertidores de datos. Comprender esto es fundamental para identificar las fortalezas y debilidades de las distintas arquitecturas de ADC/DAC.
+
+    La Figura \ref{fig:funcion_de_transferencia} muestra las características de transferencia ideales de un DAC unipolar de 3 bits y un ADC unipolar de 3 bits. En un DAC, tanto la entrada como la salida están cuantizadas, por lo que el gráfico consta de ocho puntos. Si bien es posible discutir la línea que conecta estos puntos, es fundamental recordar que la característica de transferencia real no es una línea continua, sino un conjunto de puntos discretos.
+
+    \begin{figure}[!h]
+      \centering
+      \includegraphics[width=0.95\textwidth]{funcion_de_transferencia}
+      \caption{Funciones de transferencia para DAC y ADC ideales de 3 bits.}
+      \label{fig:funcion_de_transferencia}
+    \end{figure}
+
+    La entrada de un ADC es analógica y no está cuantizada, mientras que su salida sí lo está. Por ello, la característica de transferencia se representa mediante ocho escalones horizontales. Para analizar el desplazamiento, la ganancia y la linealidad de un ADC, se considera la línea que une los puntos medios de estos escalones, conocidos habitualmente como los \textit{centros de código}.
+
+    En los DACs y ADCs, la escala completa digital (todos los bits en 1) corresponde a 1 LSB por debajo de la escala completa analógica (FS). Las transiciones ideales en un ADC ocurren a 1/2 LSB por encima de cero y, a partir de ahí, en cada LSB hasta llegar a $1 \frac{1}{2}$ LSB por debajo de la escala completa analógica. Como la entrada analógica de un ADC puede tomar cualquier valor, mientras que la salida digital está cuantizada, puede haber una diferencia de hasta 1/2 LSB entre la entrada analógica real y el valor exacto de la salida digital. Este fenómeno se conoce como \textit{error de cuantización} o \textit{incertidumbre de cuantización}, como se muestra en la Figura \ref{fig:funcion_de_transferencia}. En aplicaciones de señal alterna (muestreo), este error de cuantización genera ruido de cuantización.
+
+    Los cuatro errores de corriente continua en un convertidor de datos son: \textit{error de offset}, \textit{error de ganancia} y dos tipos de \textit{errores de linealidad} (\textit{diferencial} e \textit{integral}). Los errores de offset y ganancia son similares a los que se presentan en amplificadores, para un rango de entrada bipolar. (Cabe señalar que, aunque los errores de offset y de cero son idénticos en amplificadores y convertidores de datos unipolares, no lo son en convertidores bipolares, por lo que deben diferenciarse con cuidado).
+
+    Las características de transferencia tanto de los DACs como de los ADCs pueden representarse como una línea recta expresada por D = K + GA, donde D es el código digital, A es la señal analógica, y K y G son constantes. En un convertidor unipolar, el valor ideal de K es cero; en un convertidor bipolar con offset, es –1 LSB. El error de offset es la diferencia entre el valor real de K y su valor ideal.
+
+    El error de ganancia es la diferencia entre G y su valor ideal, y generalmente se expresa como un porcentaje de esa diferencia, aunque también puede definirse como la contribución del error de ganancia (en mV o LSB) al error total en escala completa. Estos errores suelen poder corregirse por el usuario del convertidor de datos. Sin embargo, es importante señalar que en los amplificadores, el ajuste de desfase se realiza con una entrada de cero, mientras que la ganancia se ajusta cerca de la escala completa. El algoritmo de ajuste para un convertidor de datos bipolar es más complejo.
+
+    El error de linealidad integral de un convertidor es similar al error de linealidad de un amplificador, y se define como la desviación máxima de la característica de transferencia real del convertidor respecto a una línea recta, generalmente expresada como un porcentaje de la escala completa (aunque también puede expresarse en LSBs). En el caso de un ADC, la convención más común es trazar una línea recta a través de los puntos medios de los códigos, o centros de código. Hay dos métodos comunes para determinar esta línea recta: la línea basada en los puntos extremos y la mejor línea recta.
+
+    El otro tipo de no linealidad en un convertidor es la no linealidad diferencial (DNL), que se refiere a la linealidad de las transiciones de código en el convertidor. Idealmente, un cambio de 1 LSB en el código digital debería corresponder a un cambio exacto de 1 LSB en la señal analógica. En un DAC, esto significa que un cambio de 1 LSB en el código digital genera exactamente 1 LSB de cambio en la salida analógica, mientras que en un ADC se requiere un cambio de 1 LSB en la entrada analógica para pasar de una transición digital a la siguiente. El error de linealidad diferencial se define como la desviación máxima de cualquier cambio cuántico (o de LSB) en toda la función de transferencia con respecto a su tamaño ideal de 1 LSB.
+
+    Cuando el cambio en la señal analógica correspondiente a un cambio de 1 LSB en el código digital es mayor o menor que 1 LSB, se considera que existe un error de DNL. El error de DNL en un convertidor se define generalmente como el valor máximo de DNL que puede encontrarse en cualquier transición dentro del rango del convertidor. La Figura \ref{fig:funcion_de_transferencia_no_ideal} muestra las funciones de transferencia no ideales de un DAC y un ADC, mostrando los efectos del error de DNL.
+
+    Si el DNL de un DAC es inferior a –1 LSB en alguna transición, el DAC se considera no monótono, lo que significa que su característica de transferencia presenta uno o más máximos o mínimos localizados. Un DNL superior a +1 LSB no provoca no monotonía, pero sigue siendo indeseable
+
+    \begin{figure}[!h]
+      \centering
+      \includegraphics[width=0.95\textwidth]{funcion_de_transferencia_no_ideal}
+      \caption{Funciones de transferencia para DAC y ADC no ideales de 3 bits.}
+      \label{fig:funcion_de_transferencia_no_ideal}
+    \end{figure}
+
+    La monotonía de un DAC a menudo se especifica de manera explícita en las hojas de datos, aunque si se garantiza que el DNL es menor a 1 LSB (es decir, |DNL| $\leq$ 1 LSB ), el dispositivo será monótono, incluso sin una garantía explícita.
+
+    Los ADCs pueden presentar no monotonía, pero un resultado más común del exceso de DNL en los ADCs es la aparición de códigos faltantes. La ausencia de códigos en un ADC es tan problemática como la no monotonía en un DAC. Esto ocurre, al igual que en los DACs, cuando el DNL es inferior a –1 LSB.
+
+    En un DAC, no puede haber códigos faltantes, ya que cada palabra de entrada digital producirá una salida analógica correspondiente. Sin embargo, los DACs pueden ser no monótonos, como se mencionó anteriormente. En un DAC binario directo, el punto más probable para que ocurra una condición de no monotonía es en la mitad de la escala, entre los códigos 011...11 y 100...00. Si se produce una condición de no monotonía en este punto, generalmente se debe a que el DAC no está calibrado o ajustado correctamente. Un ADC de aproximación sucesiva con un DAC interno no monótono normalmente generará códigos faltantes, pero seguirá siendo monótono. Sin embargo, es posible que un ADC sea no monótono, dependiendo de la arquitectura de conversión específica.
+
+    \begin{table}[h!]
+      \caption{Resumen de tipos de ADC.}
+      \begin{center}
+      \resizebox{\textwidth}{!}{
+        \begin{NiceTabular}{|c|c|c|c|c|}
+          \hline
+          \textbf{Characteristic} & \textbf{Flash} & \textbf{Pipelined} & \textbf{SAR} & \textbf{Sigma-Delta}\\ 
+          \hline
+          Throughput & 1 & 2 & 3 & 4 \\ 
+          Resolution (ENOB) & 4 & 3 & 2 & 1 \\ 
+          Latency & 1 & 3 & 2 & 4 \\ 
+          Suitability for converting multiple signals per ADC & 1 & 2 & 1 & 3 \\ 
+          Capability to convert non-periodic multiplexed signals & 1 & 2 & 1 & 3 \\ 
+          Simplified anti-aliasing &  &  &  & $\star$ \\ 
+          Can undersample & $\star$ & $\star$ & $\star$ &  \\ 
+          Can increase resolution through averaging (with dither noise) & $\star$ & $\star$ & $\star$ &  \\ 
+          \hline
+        \end{NiceTabular}
+      }
+      \label{tab:adc_resumen}
+      \end{center}
+    \end{table}
+
 
   \section{Convertidores Digitales-Analógico}
 
     \subsection{Visión general}
-
-    Los convertidores de digital a analógico (DAC) se utilizan para transformar los datos transmitidos o almacenados, o los resultados del procesamiento digital, de nuevo en variables del mundo real para su control, visualización de información o procesamiento analógico posterior. \cite{Kester2007}
 
 
 
