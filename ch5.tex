@@ -3,8 +3,10 @@ En este capítulo se presentan los resultados obtenidos del diseño del protocol
 
 
 \section{Resultados de protocolo SPI}
-
+A continuación, se presentan dos capturas de osciloscopio que muestran las mediciones realizadas al ADC. En las figuras siguientes, se pueden observar cuatro gráficos distintos: la señal número 1, en color azul, corresponde al comando de escritura utilizado para configurar el ADC; la señal número 2 representa la señal de reloj dclk generada; la señal 3 muestra el valor leído de uno de los canales del ADC; y, finalmente, la señal número 4 corresponde a la señal de chip select. Cabe destacar que las mediciones obtenidas coinciden con las especificaciones del datasheet del convertidor, validando el correcto funcionamiento del sistema. El proceso de lectura y escritura requieren un total de 24 ciclos de dclk para completarse.
+\newpage
 \subsection{ADC}
+En esta imagen se puede observar que el ADC leyó un voltaje de 2V.
 
             \begin{figure}[hbtp]
                 \centering
@@ -13,6 +15,7 @@ En este capítulo se presentan los resultados obtenidos del diseño del protocol
                 \label{fig:ss_osc_adc_2v}
             \end{figure} 
 
+En esta imagen se puede observar que la lectura corresponde a un voltaje de 3.3V
             \begin{figure}[hbtp]
                 \centering
                 \includegraphics[width=0.6\textwidth]{ss_osc_adc_3v}
@@ -22,24 +25,29 @@ En este capítulo se presentan los resultados obtenidos del diseño del protocol
 
 \newpage     
 \subsection{DAC}
+Al igual que en el caso del ADC, se presentan las mediciones obtenidas por el osciloscopio para el DAC. En este caso, únicamente se muestra el proceso de escritura en el convertidor. La primera señal capturada corresponde a la señal de reloj del DAC (sck), que sincroniza la transferencia de datos. La segunda señal muestra el comando de 4 bits, seguido del valor de 12 bits que se desea escribir en el DAC. Finalmente, la tercera señal corresponde al chip select, que habilita el convertidor durante la operación de escritura. Estas mediciones permiten verificar el correcto funcionamiento del DAC, asegurando que los datos se transfieren de acuerdo con las especificaciones del dispositivo.
 
+
+Esta imagen corresponde a una escritura de 2V.
             \begin{figure}[hbtp]
                 \centering
                 \includegraphics[width=0.6\textwidth]{ss_osc_dac_2v}
-                \caption{Captura de osciloscopio de lectura y escritura de DAC.}
+                \caption{Captura de osciloscopio de escritura de DAC.}
                 \label{fig:ss_osc_dac_2v}
             \end{figure}
             
+            
+La siguiente imagen corresponde a una escritura de 3.3V           
             \begin{figure}[hbtp]
                 \centering
                 \includegraphics[width=0.6\textwidth]{ss_osc_dac_3v}
-                \caption{Captura de osciloscopio de lectura y escritura de DAC.}
+                \caption{Captura de osciloscopio de escritura de DAC.}
                 \label{fig:ss_osc_dac_3v}
             \end{figure}   
             
 \newpage                      
 \section{Resultados de caracterización de resistencias}  
-
+Al trabajar con la matriz de resistencias y al integrar los multiplexores en el sistema, se observó que el valor de voltaje recibido era menor de lo esperado. Este comportamiento anómalo llevó a sospechar que los multiplexores estaban introduciendo una resistencia adicional que afectaba las mediciones. Para investigar el impacto de esta resistencia en los resultados, se optó por medir la resistencia interna de los multiplexores. Esta medición permitió cuantificar el efecto de los multiplexores sobre los valores de voltaje obtenidos y ajustar el diseño para minimizar el impacto de esta resistencia en las lecturas.
             \begin{table}[htbp]
                 \caption{Resistencia de multiplexores.}
                 \begin{center}
@@ -153,129 +161,10 @@ En este capítulo se presentan los resultados obtenidos del diseño del protocol
                 \caption{Máscaras aplicadas a matriz de fototransistores.}
                 \label{fig:mask_final}
             \end{figure}  
-\newpage
-\subsection{Cuadrado}
 
             \begin{figure}[hbtp]
                 \centering
-                \includegraphics[width=0.6\textwidth]{fig_02}
-                \caption{Máscaras aplicadas a matriz de fototransistores.}
-                \label{fig:fig_02}
-            \end{figure} 
-\newpage            
-\subsection{Cuadrados contra esquina}
-
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=0.6\textwidth]{fig_01}
-                \caption{Máscaras aplicadas a matriz de fototransistores.}
-                \label{fig:fig_01}
-            \end{figure} 
-\newpage
-\subsection{Escaleras contra esquina}
-
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=0.6\textwidth]{fig_08}
-                \caption{Máscaras aplicadas a matriz de fototransistores.}
-                \label{fig:fig_08}
-            \end{figure} 
-\newpage
-\subsection{Líneas}
-
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=0.6\textwidth]{fig_05}
-                \caption{Máscaras aplicadas a matriz de fototransistores.}
-                \label{fig:fig_05}
-            \end{figure} 
-\newpage
-\subsection{Escalera}
-
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=0.6\textwidth]{fig_06}
-                \caption{Máscaras aplicadas a matriz de fototransistores.}
-                \label{fig:fig_06}
-            \end{figure} 
-\newpage
-\subsection{Letra I}
-
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=0.6\textwidth]{01_i}
-                \caption{Máscaras aplicadas a matriz de fototransistores.}
-                \label{fig:01_i}
-            \end{figure} 
-\newpage
-\subsection{Letra N}
-
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=0.6\textwidth]{02_n}
-                \caption{Máscaras aplicadas a matriz de fototransistores.}
-                \label{fig:02_n}
-            \end{figure} 
-\newpage
-\subsection{Letra A}
-
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=0.6\textwidth]{03_a}
-                \caption{Máscaras aplicadas a matriz de fototransistores.}
-                \label{fig:03_a}
-            \end{figure} 
-\newpage
-\subsection{Letra O}
-
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=0.6\textwidth]{04_o}
-                \caption{Máscaras aplicadas a matriz de fototransistores.}
-                \label{fig:04_o}
-            \end{figure} 
-\newpage
-\subsection{Letra E}
-
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=0.6\textwidth]{05_e}
-                \caption{Máscaras aplicadas a matriz de fototransistores.}
-                \label{fig:05_e}
-            \end{figure} 
-\newpage
-\subsection{Corazón}
-
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=0.6\textwidth]{fig_04}
-                \caption{Máscaras aplicadas a matriz de fototransistores.}
-                \label{fig:fig_04}
-            \end{figure} 
-\newpage
-\subsection{Círculo}
-
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=0.6\textwidth]{circle}
-                \caption{Máscaras aplicadas a matriz de fototransistores.}
-                \label{fig:circle}
-            \end{figure} 
-\newpage
-\subsection{Gato}
-
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=0.6\textwidth]{fig_07}
-                \caption{Máscaras aplicadas a matriz de fototransistores.}
-                \label{fig:fig_07}
-            \end{figure} 
-\newpage
-\subsection{Triángulo}
-
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=0.6\textwidth]{triangle}
-                \caption{Máscaras aplicadas a matriz de fototransistores.}
-                \label{fig:triangle}
-            \end{figure} 
+                \includegraphics[width=0.8\textwidth]{result_mask}
+                \caption{Resultados de las máscaras aplicadas a los fototransistores.}
+                \label{fig:result_mask}
+            \end{figure}
