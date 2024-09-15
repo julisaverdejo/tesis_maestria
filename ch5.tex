@@ -4,7 +4,7 @@ En este capítulo se presentan los resultados obtenidos del diseño del protocol
 
 \section{Resultados de protocolo SPI}
 A continuación, se presentan dos capturas de osciloscopio que muestran las mediciones realizadas al ADC. En las figuras siguientes, se pueden observar cuatro gráficos distintos: la señal número 1, en color azul, corresponde al comando de escritura utilizado para configurar el ADC; la señal número 2 representa la señal de reloj dclk generada; la señal 3 muestra el valor leído de uno de los canales del ADC; y, finalmente, la señal número 4 corresponde a la señal de chip select. Cabe destacar que las mediciones obtenidas coinciden con las especificaciones del datasheet del convertidor, validando el correcto funcionamiento del sistema. El proceso de lectura y escritura requieren un total de 24 ciclos de dclk para completarse.
-\newpage
+
 \subsection{ADC}
 En esta imagen se puede observar que el ADC leyó un voltaje de 2V.
 
@@ -23,7 +23,7 @@ En esta imagen se puede observar que la lectura corresponde a un voltaje de 3.3V
                 \label{fig:ss_osc_adc_3v}
             \end{figure} 
 
-\newpage     
+     
 \subsection{DAC}
 Al igual que en el caso del ADC, se presentan las mediciones obtenidas por el osciloscopio para el DAC. En este caso, únicamente se muestra el proceso de escritura en el convertidor. La primera señal capturada corresponde a la señal de reloj del DAC (sck), que sincroniza la transferencia de datos. La segunda señal muestra el comando de 4 bits, seguido del valor de 12 bits que se desea escribir en el DAC. Finalmente, la tercera señal corresponde al chip select, que habilita el convertidor durante la operación de escritura. Estas mediciones permiten verificar el correcto funcionamiento del DAC, asegurando que los datos se transfieren de acuerdo con las especificaciones del dispositivo.
 
@@ -44,8 +44,7 @@ La siguiente imagen corresponde a una escritura de 3.3V
                 \caption{Captura de osciloscopio de escritura de DAC.}
                 \label{fig:ss_osc_dac_3v}
             \end{figure}   
-            
-\newpage                      
+                                 
 \section{Resultados de caracterización de resistencias}  
 Al trabajar con la matriz de resistencias y al integrar los multiplexores en el sistema, se observó que el valor de voltaje recibido era menor de lo esperado. Este comportamiento anómalo llevó a sospechar que los multiplexores estaban introduciendo una resistencia adicional que afectaba las mediciones. Para investigar el impacto de esta resistencia en los resultados, se optó por medir la resistencia interna de los multiplexores. Esta medición permitió cuantificar el efecto de los multiplexores sobre los valores de voltaje obtenidos y ajustar el diseño para minimizar el impacto de esta resistencia en las lecturas.
             \begin{table}[htbp]
@@ -97,7 +96,7 @@ Al trabajar con la matriz de resistencias y al integrar los multiplexores en el 
                 \label{fig:04_10k_new}
             \end{figure}  
                 
-\newpage                      
+                     
 \section{Resultados de caracterización de fotorresistencias}
 
             \begin{table}[htbp]
@@ -152,7 +151,7 @@ Al trabajar con la matriz de resistencias y al integrar los multiplexores en el 
             \end{figure}            
             
             
-\newpage
+
 \section{Imágenes obtenidas}
 
             \begin{figure}[hbtp]

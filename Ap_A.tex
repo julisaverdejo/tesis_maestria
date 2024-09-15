@@ -24,3 +24,71 @@
     \newpage
     \lstinputlisting[style = VERILOG, caption = UART IP., label = cod:uart_ip]{codigos/uart_ip/rtl/uart_ip.v}
 
+    \newpage
+	  \subsection{Controlador SPI}
+
+	  \subsubsection{SPI write}
+    
+
+    \lstinputlisting[style = VERILOG, caption =  Divisor de frecuencia., label = cod:clk_div]{codigos/spi_write_ip/rtl/clk_div.v}
+
+
+    \lstinputlisting[style = VERILOG, caption =  Contador de bits., label = cod:counter_w]{codigos/spi_write_ip/rtl/counter_w.v}
+
+    \newpage
+    \lstinputlisting[style = VERILOG, caption =  Máquina de estados de spi write., label = cod:fsm_spi_write]{codigos/spi_write_ip/rtl/fsm_spi_write.v}
+
+
+    \lstinputlisting[style = VERILOG, caption =  PISO shift register., label = cod:piso_reg]{codigos/spi_write_ip/rtl/piso_reg.v}
+    	
+
+    \lstinputlisting[style = VERILOG, caption =  SPI READ IP., label = cod:spi_write_ip]{codigos/spi_write_ip/rtl/spi_write_ip.v}
+
+    \newpage	  
+	  \subsubsection{SPI read}
+	  
+
+    \lstinputlisting[style = VERILOG, caption =  Contador de flancos de reloj de SPI., label = cod:counter_r]{codigos/spi_read_ip/rtl/counter_r.v}
+
+
+    \lstinputlisting[style = VERILOG, caption =  Máquina de estados de spi read., label = cod:fsm_spi_read]{codigos/spi_read_ip/rtl/fsm_spi_read.v}
+
+
+    \lstinputlisting[style = VERILOG, caption =  SIPO shift register., label = cod:sipo_reg]{codigos/spi_read_ip/rtl/sipo_reg.v}
+
+    \newpage
+    \lstinputlisting[style = VERILOG, caption =  PIPO shift register., label = cod:pipo_reg]{codigos/spi_read_ip/rtl/pipo_reg.v}
+    	
+
+    \lstinputlisting[style = VERILOG, caption =  SPI READ IP., label = cod:spi_read_ip]{codigos/spi_read_ip/rtl/spi_read_ip.v}
+    
+	\newpage
+	  \subsubsection{SPI DAC IP}
+	  
+	  
+    \lstinputlisting[style = VERILOG, caption = SPI DAC IP., label = cod:spi_write_dac]{codigos/spi_dac_ip/rtl/spi_write_dac.v}	  
+
+    \newpage	  
+	  \subsubsection{SPI ADC IP}
+	  
+
+    \lstinputlisting[style = VERILOG, caption = SPI ADC IP., label = cod:spi_write_read]{codigos/spi_adc_ip/rtl/spi_write_read.v}	  
+    
+	\newpage 
+	  \subsubsection{Códigos de caracterización de una resistencia}	  
+	  
+    \lstinputlisting[style = VERILOG, caption =  Memoria ROM., label = cod:rom_volts]{codigos/dac_adc_tx_ip/rtl/rom_volts.v}
+
+    \lstinputlisting[style = VERILOG, caption =  Memoria RAM., label = cod:ram_volts]{codigos/dac_adc_tx_ip/rtl/ram_volts.v}
+    
+	 \newpage
+    \lstinputlisting[style = VERILOG, caption = Contador de direcciones de ROM., label = cod:counter_volts]{codigos/dac_adc_tx_ip/rtl/counter_volts.v}
+
+    \lstinputlisting[style = VERILOG, caption = Contador de direcciones de RAM., label = cod:counter_address]{codigos/dac_adc_tx_ip/rtl/counter_address.v}
+
+	 \newpage    	
+    \lstinputlisting[style = VERILOG, caption =  Multiplexor., label = cod:mux_ch]{codigos/dac_adc_tx_ip/rtl/mux_ch.v}	  
+    
+    \lstinputlisting[style = VERILOG, caption =  Máquina de estados de caracterización., label = cod:fsm_dac_adc_tx]{codigos/dac_adc_tx_ip/rtl/fsm_dac_adc_tx.v}
+    	
+    \lstinputlisting[style = VERILOG, caption =  Módulo de caracterización de una resistencia., label = cod:dac_adc_tx]{codigos/dac_adc_tx_ip/rtl/dac_adc_tx.v}	    
