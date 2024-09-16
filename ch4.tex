@@ -1,5 +1,5 @@
 \chapter{Diseño de firmware}
-En este capítulo se describen todas las etapas necesarias para desarrollar un sistema de adquisición de datos capaz de generar una imagen. Estas etapas abarcan la caracterización de resistencias, multiplexores y una fotorresistencia, además del diseño de una PCB para una matriz de fototransistores. Finalmente, se presenta el diseño digital implementado para adquirir una imagen. Todos los diseños fueron implementados en la tarjeta Basys 3 de Digilent, que cuenta con una FPGA Artix-7 (XC7A35T-1CPG236C).
+En este capítulo se describen las etapas realizadas para implementar un sistema de adquisición de datos capaz de generar una imagen. Estas etapas abarcan la caracterización de resistencias, multiplexores y una fotorresistencia, además del diseño de una PCB para una matriz de fototransistores. Finalmente, se presenta el diseño digital implementado para adquirir una imagen. Todos los diseños fueron implementados en la tarjeta Basys 3 de Digilent, que cuenta con una FPGA Artix-7 (XC7A35T-1CPG236C). La adquisición de datos se realizó en MATLAB.
 
 \section{Caracterización de resistencias}
 En esta etapa, se realizó la caracterización de cuatro resistencias utilizando un circuito divisor de voltaje (Figura \ref{fig:divisor2}). En este circuito, $R_{test}$ simula la resistencia de un pixel de un arreglo de microbolómetros, mientras que $R_{ref}$ emula un circuito de lectura. Trabajar con resistencias de valores conocidos permite verificar con mayor precisión si los resultados experimentales coinciden con los teóricos. 
@@ -7,7 +7,7 @@ En esta etapa, se realizó la caracterización de cuatro resistencias utilizando
 
             \begin{figure}[hbtp]
                 \centering
-                \includegraphics[width=0.3\textwidth]{divisor2}
+                \includegraphics[width=0.25\textwidth]{divisor2}
                 \caption{Divisor de voltaje como microbolómetro y circuito de lectura}
                 \label{fig:divisor2}
             \end{figure} 
@@ -101,7 +101,7 @@ Los códigos de los módulos descritos anteriormente se encuentran en el \textbf
 Cuando se quiere trabajar con una matriz de $m \times n$ detectores, se deben emplear dos multiplexores: uno para direccionar las columnas y otro para las filas de la matriz. En este trabajo se utilizaron los multiplexores 74HC4051, cada uno con 8 entradas/salidas (Yn), una entrada/salida común (Z), tres entradas digitales de selección (S0-S2) y un pin de habilitación (E), activo en bajo. Estos multiplexores pueden alimentarse con un voltaje en el rango de $-5V$ a $+5V$.
 
 
-Al utilizar una matriz de detectores, es esencial comprender cómo los multiplexores afectan el circuito, ya que, al estar conectados a la matriz, influyen en el valor del voltaje que debe caer sobre el circuito de lectura. Para evaluar este impacto, se emplearon las cuatro resistencias seleccionadas como $R_{test}$, organizándolas en forma de matriz. Los multiplexores fueron alimentados con $3.3V$ mediante la tarjeta Basys 3, y se utilizaron los mismos códigos que en la caracterización de resistencias. No fue necesario desarrollar código adicional para controlar los multiplexores, ya que estos se operaron manualmente durante las pruebas.
+Al utilizar una matriz de detectores, es esencial comprender cómo los multiplexores afectan el circuito, ya que, al estar conectados a la matriz, influyen en el valor del voltaje que debe caer sobre el circuito de lectura. Para evaluar este impacto, se emplearon las cuatro resistencias seleccionadas como $R_{test}$, organizándolas en forma de matriz. Los multiplexores fueron alimentados con $3.3V$ mediante la tarjeta Basys 3, y se utilizaron los mismos códigos que en la caracterización de resistencias. De igual forma, se utilizaron los mismos códigos de MATLAB de la sección anterior. Tampoco fue necesario desarrollar código adicional para controlar los multiplexores, ya que estos se operaron manualmente durante las pruebas.
 
 
 A continuación, se presenta la tabla de verdad del 74HC4051, que muestra cómo debe ser controlado.
@@ -214,7 +214,9 @@ En la Figura \ref{fig:pcb_matrix}, se puede apreciar el diseño final de la PCB.
             \end{figure}
 
 \subsection{Diseño digital}
-El fototransistor ALS-PT19-315C es un sensor diseñado para detectar luz visible y puede ser alimentado con un voltaje que varía entre $2.5V$ y $5V$. Presenta una corriente en oscuridad de 0.1$\mu$A. Además, cuenta con un rise time de 0.11 ms y un fall time de 0.22 ms, lo que le permite responder rápidamente a los cambios en la intensidad de la luz. En la siguiente tabla se muestra un resumen de los parámetros mencionados.
+El fototransistor ALS-PT19-315C es un sensor diseñado para detectar luz visible. Su funcionamiento es sencillo: a mayor incidencia de luz, mayor es la corriente generada, y a menor luz, la corriente disminuye.
+
+Este detector puede ser alimentado con un voltaje en un rango entre $2.5V$ y $5V$. Presenta una corriente en oscuridad de 0.1$\mu$A. Además, cuenta con un rise time de 0.11 ms y un fall time de 0.22 ms, lo que le permite responder rápidamente a los cambios en la intensidad de la luz. En la siguiente tabla se muestra un resumen de los parámetros mencionados.
 
             \begin{table}[htbp]
                 \caption{Parámetros del fototransistor ALS-PT19-315C}
@@ -236,8 +238,6 @@ El fototransistor ALS-PT19-315C es un sensor diseñado para detectar luz visible
                 \label{tab:als_param}
                 \end{center}
             \end{table}
-
-Dadas las especificaciones anteriores, se optó por polarizarlo con los $3.3V$ proporcionados por la tarjeta Basys 3, lo que hizo innecesario el uso del DAC en el proceso de adquisición de imágenes.
 
 
 En el diseño digital, se reutilizaron varios módulos previamente implementados, como los módulos de escritura y lectura del SPI, la transmisión por UART, la memoria RAM, un multiplexor, el debouncer, y un contador para direccionar la RAM. Además, se incorporaron dos contadores de carrera libre de 3 bits: uno para direccionar las filas y otro para las columnas de la matriz de fototransistores, junto con un contador descendente que permite estabilizar el circuito de lectura. Finalmente, se diseñó una máquina de estados específica para coordinar y controlar el proceso de obtención de imágenes.
@@ -264,3 +264,5 @@ La máquina de estados diseñada consta de 18 estados, a continuación, se expli
 \item s16: Cambia el selector del multiplexor a 0 y habilita el contador que direcciona a la memoria RAM para transmitir la siguiente conversión del ADC.
 \item s17: Deshabilita el contador de direcciones y verifica si ha llegado a cero. Si es así, regresa al estado s0; de lo contrario, vuelve al estado s11 para realizar una nueva transmisión de datos.
 \end{itemize}
+
+Dadas las especificaciones anteriores, se optó por polarizar el fototransistor con los 3.3V proporcionados por la tarjeta Basys 3, lo que hizo innecesario el uso del DAC en el proceso de adquisición de imágenes. El circuito de lectura utilizado consistió en una resistencia de $10K\Omega$ y un capacitor de 10nF. Una vez implementado el diseño en la FPGA y conectados los módulos correspondientes, la recepción de los datos se realizó en MATLAB para su posterior procesamiento y generación de la imagen.
