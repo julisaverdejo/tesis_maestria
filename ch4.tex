@@ -1,5 +1,5 @@
 \chapter{Diseño de firmware}
-En este capítulo se presentan todas las etapas necesarias para el desarrollo de un sistema de adquisición de datos capaz de generar una imagen. Estas etapas incluyen la caracterización de resistencias y fotorresistencias, así como la implementación final del sistema de adquisición de datos. También, se describe el diseño digital correspondiente a cada una de estas fases. Para obtener la imagen, se diseñó una PCB destinada a una matriz de fototransistores, cuyo diseño también se explicará en detalle.
+En este capítulo se describen todas las etapas necesarias para desarrollar un sistema de adquisición de datos capaz de generar una imagen. Estas etapas abarcan la caracterización de resistencias, multiplexores y una fotorresistencia, además del diseño de una PCB para una matriz de fototransistores. Finalmente, se presenta el diseño digital implementado para adquirir una imagen. Todos los diseños fueron implementados en la tarjeta Basys 3 de Digilent, que cuenta con una FPGA Artix-7 (XC7A35T-1CPG236C).
 
 \section{Caracterización de resistencias}
 En esta etapa, se realizó la caracterización de cuatro resistencias utilizando un circuito divisor de voltaje (Figura \ref{fig:divisor2}). En este circuito, $R_{test}$ simula la resistencia de un pixel de un arreglo de microbolómetros, mientras que $R_{ref}$ emula un circuito de lectura. Trabajar con resistencias de valores conocidos permite verificar con mayor precisión si los resultados experimentales coinciden con los teóricos. 
@@ -214,5 +214,53 @@ En la Figura \ref{fig:pcb_matrix}, se puede apreciar el diseño final de la PCB.
             \end{figure}
 
 \subsection{Diseño digital}
+El fototransistor ALS-PT19-315C es un sensor diseñado para detectar luz visible y puede ser alimentado con un voltaje que varía entre $2.5V$ y $5V$. Presenta una corriente en oscuridad de 0.1$\mu$A. Además, cuenta con un rise time de 0.11 ms y un fall time de 0.22 ms, lo que le permite responder rápidamente a los cambios en la intensidad de la luz. En la siguiente tabla se muestra un resumen de los parámetros mencionados.
+
+            \begin{table}[htbp]
+                \caption{Parámetros del fototransistor ALS-PT19-315C}
+                \begin{center}
+                    \resizebox{0.8\linewidth}{!}{ 
+                    \begin{NiceTabular}{|c|c|c|c|c|c| }
+                        \CodeBefore
+                        \Body
+                        \hline
+                        \textbf{Parameter} & \textbf{Symbol} & \textbf{Min} & \textbf{Typ} & \textbf{Max} & \textbf{Unit}\\
+                        \hline
+                        Supply voltage & $V_{CC}$ & 2.5 & --- & 5 & V\\
+                        Dark current & $I_{CEO}$ & --- & --- & 0.1 & $\mu$A\\
+                        Rise time & $t_{r}$ & --- & 0.11 & --- & ms\\
+                        Fall time & $t_{f}$ & --- & 0.22 & --- & ms \\
+                        \hline
+                    \end{NiceTabular}
+                    }
+                \label{tab:als_param}
+                \end{center}
+            \end{table}
+
+Dadas las especificaciones anteriores, se optó por polarizarlo con los $3.3V$ proporcionados por la tarjeta Basys 3, lo que hizo innecesario el uso del DAC en el proceso de adquisición de imágenes.
 
 
+En el diseño digital, se reutilizaron varios módulos previamente implementados, como los módulos de escritura y lectura del SPI, la transmisión por UART, la memoria RAM, un multiplexor, el debouncer, y un contador para direccionar la RAM. Además, se incorporaron dos contadores de carrera libre de 3 bits: uno para direccionar las filas y otro para las columnas de la matriz de fototransistores, junto con un contador descendente que permite estabilizar el circuito de lectura. Finalmente, se diseñó una máquina de estados específica para coordinar y controlar el proceso de obtención de imágenes.
+
+
+La máquina de estados diseñada consta de 18 estados, a continuación, se explicará la función de cada uno de ellos.
+
+\begin{itemize}
+\item s0: Espera una señal de habilitación, la cual proviene del módulo debouncer para iniciar la máquina de estados.
+\item s1: Habilita el contador ascendente y espera a que este llegue a cero.
+\item s2 y s3: Estados de guarda.
+\item s4: Habilitación del módulo SPI para controlar al ADC.
+\item s5: Deshabilita el módulo SPI y permanece en este estado hasta que la conversión finalice.
+\item s6: Habilita la memoria RAM para almacenar la caída de voltaje del circuito de lectura, leída y convertida por el ADC.
+\item s7: Deshabilita la memoria RAM y habilita el contador de las columnas.
+\item s8: Verifica si el contador de las columnas ha llegado a cero. Si es así, pasa al estado s9; de lo contrario, regresa a s1 y repite el ciclo hasta que se cumpla la condición.
+\item s9: Activa el contador de las filas.
+\item s10: Deshabilita el contador de las filas y verifica si ha llegado a cero. Si es así, pasa al estado s11; de lo contrario, regresa a s1 y repite el ciclo hasta que se cumpla la condición. 
+\item s11: Activa la transmisión.
+\item s12: Desactiva la transmisión y espera a que esta termine.
+\item s13: Cambia el selector del multiplexor a 1.
+\item s14: Habilita nuevamente la transmisión.
+\item s15: Deshabilita la transmisión y, cuando la bandera eotx sea igual a 1 pasa al estado s16.
+\item s16: Cambia el selector del multiplexor a 0 y habilita el contador que direcciona a la memoria RAM para transmitir la siguiente conversión del ADC.
+\item s17: Deshabilita el contador de direcciones y verifica si ha llegado a cero. Si es así, regresa al estado s0; de lo contrario, vuelve al estado s11 para realizar una nueva transmisión de datos.
+\end{itemize}
