@@ -1,28 +1,38 @@
 \chapter{Mediciones y resultados}
-En este capítulo se presentan los resultados obtenidos del diseño del protocolo SPI, utilizado para controlar los convertidores D/A y A/D, así como la caracterización de las fotorresistencias. Además, se incluyen las imágenes obtenidas por medio de la matriz de fototransistores.
+En este capítulo se presentan los resultados del diseño del protocolo SPI utilizado para controlar los convertidores D/A y A/D, así como los resultados obtenidos de la caracterización de resistencias, multiplexores y fotorresistencia. Además, se muestran las imágenes generadas por la matriz de fototransistores, evidenciando el correcto funcionamiento del sistema de adquisición de datos implementado y de la PCB diseñada.
 
 
 \section{Resultados de protocolo SPI}
-A continuación, se presentan dos capturas de osciloscopio que muestran las mediciones realizadas al ADC. En las figuras siguientes, se pueden observar cuatro gráficos distintos: la señal número 1, en color azul, corresponde al comando de escritura utilizado para configurar el ADC; la señal número 2 representa la señal de reloj dclk generada; la señal 3 muestra el valor leído de uno de los canales del ADC; y, finalmente, la señal número 4 corresponde a la señal de chip select. Cabe destacar que las mediciones obtenidas coinciden con las especificaciones del datasheet del convertidor, validando el correcto funcionamiento del sistema. El proceso de lectura y escritura requieren un total de 24 ciclos de dclk para completarse.
+Para probar el funcionamiento del diseño del protocolo SPI, se utilizó un potenciómetro al que se varió la resistencia, conectado a un canal del convertidor A/D. Para evaluar el convertidor D/A, se asignó un valor de voltaje en formato binario. Las señales generadas por los módulos implementados en la FPGA, junto con las conversiones realizadas por el ADC y DAC, fueron visualizadas mediante un osciloscopio y un multímetro. En esta sección se explicarán los resultados obtenidos de ambos convertidores.
 
 \subsection{ADC}
-En esta imagen se puede observar que el ADC leyó un voltaje de 2V.
+En el ADC se utilizó el protocolo de lectura y escritura del SPI. Según el datasheet, una conversión completa requiere 25 ciclos de dclk: durante los primeros 8 ciclos se configura el ADC, luego se deja pasar un ciclo, y en los siguientes 16 ciclos se realiza la conversión. El ADC realiza la conversión en grupos de 8 bits.
+
+
+En las capturas del osciloscopio (Figura \ref{fig:ss_osc_adc_2v} y Figura \ref{fig:ss_osc_adc_3v}) se visualizan cuatro señales numeradas del 1 al 4. La señal 1 corresponde al comando de configuración del ADC, la señal 2 al reloj dclk, la señal 3 a la conversión realizada por el ADC, y la señal 4 al chip select (CS). Es importante destacar que las señales 1, 2, y 4 son generadas por los módulos diseñados e implementados en la FPGA, mientras que la señal 3 proviene directamente del ADC, mostrando el resultado de la conversión.
+
+
+Se realizaron dos pruebas para comprobar el funcionamiento del SPI. En la primera se conectó un potenciómetro al canal 0 del ADC y se configuró hasta obtener un voltaje de 2V. En la Figura \ref{fig:ss_osc_adc_2v} se muestra la conversión realizada por el dispositivo, evidenciando el funcionamiento del diseño del protocolo SPI y del ADC al realizar la conversión de la señal analógica a digital.
 
             \begin{figure}[hbtp]
                 \centering
                 \includegraphics[width=0.6\textwidth]{ss_osc_adc_2v}
-                \caption{Captura de osciloscopio de lectura y escritura de ADC.}
+                \caption{Captura de osciloscopio de la conversión de 2V realizada por el ADC.}
                 \label{fig:ss_osc_adc_2v}
             \end{figure} 
 
-En esta imagen se puede observar que la lectura corresponde a un voltaje de 3.3V
+La conversión en el ADC comienza a partir del décimo pulso del dclk. En este caso, la conversión resultante fue 1001 1011 0000, lo que equivale a 2480 en decimal. Realizando una regla de tres, se obtiene que este valor corresponde a un voltaje de 1.9985V.
+
+
+La segunda prueba consistió en aplicar 3.3V al canal 0 del ADC para evaluar su respuesta ante un voltaje mayor. En la siguiente figura se muestra la conversión resultante
             \begin{figure}[hbtp]
                 \centering
                 \includegraphics[width=0.6\textwidth]{ss_osc_adc_3v}
-                \caption{Captura de osciloscopio de lectura y escritura de ADC.}
+                \caption{Captura de osciloscopio de la conversión de 3.3V realizada por el ADC.}
                 \label{fig:ss_osc_adc_3v}
             \end{figure} 
 
+El resultado de la conversión fue 1111 1111 1111, que corresponde a 4095 en decimal. Este valor equivale a un voltaje de 3.3V, confirmando que el ADC realizó correctamente la conversión de la señal analógica al valor digital máximo posible para este canal.
      
 \subsection{DAC}
 Al igual que en el caso del ADC, se presentan las mediciones obtenidas por el osciloscopio para el DAC. En este caso, únicamente se muestra el proceso de escritura en el convertidor. La primera señal capturada corresponde a la señal de reloj del DAC (sck), que sincroniza la transferencia de datos. La segunda señal muestra el comando de 4 bits, seguido del valor de 12 bits que se desea escribir en el DAC. Finalmente, la tercera señal corresponde al chip select, que habilita el convertidor durante la operación de escritura. Estas mediciones permiten verificar el correcto funcionamiento del DAC, asegurando que los datos se transfieren de acuerdo con las especificaciones del dispositivo.
