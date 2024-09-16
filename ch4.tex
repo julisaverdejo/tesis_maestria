@@ -71,26 +71,26 @@ Estos módulos son:
 
     \item Transmisión (uart tx): Envía los datos guardados en la RAM y organizados por el multiplexor hacia MATLAB para su procesamiento.
 
-    \item Contadores: Se utilizan dos contadores con selector, uno para la memoria ROM y otro para la memoria RAM. Ambos son empleados para direccionar los datos de manera adecuada.
+    \item Contadores: Se utilizan dos contadores con selector, uno para la memoria ROM (counter volts) y otro para la memoria RAM (counter address). Ambos son empleados para direccionar los datos de manera adecuada.
 
-    \item Máquina de estados: Es el módulo más importante, compuesto por 17 estados, se encarga de habilitar y coordinar el funcionamiento de todos los módulos anteriormente mencionados. A continuación, se explica la función de cada uno de los estados.
+    \item Máquina de estados (fsm dac adc tx): Es el módulo más importante, compuesto por 17 estados, se encarga de habilitar y coordinar el funcionamiento de todos los módulos anteriormente mencionados. A continuación, se explica la función de cada uno de los estados.
     \begin{enumerate}
      \item s0: La máquina de estados espera una señal de activación, la cual proviene de un push button.
      \item s1: Una vez activada, se habilita la escritura del DAC para iniciar el proceso de conversión de voltaje.
      \item s2: El DAC se deshabilita, y el sistema permanece en este estado mientras la bandera \textit{end of DAC} (eodac) sea cero. Cuando la bandera cambia a 1, indica que el DAC ha completado su conversión.
      \item s3 y s4: Estados de guarda que aseguran que el circuito divisor de voltaje esté correctamente polarizado.
      \item s5: Se activa el ADC para iniciar la lectura del voltaje de $R_{ref}$.
-     \item s6: El ADC se desactiva, y el sistema permanece en este estado mientras la bandera \textit{end of ADC} (eodac) sea cero. Cuando cambia a 1, significa que el ADC ha terminado su conversión.
+     \item s6: El ADC se desactiva, y el sistema permanece en este estado mientras la bandera \textit{end of ADC} (eoadc) sea cero. Cuando cambia a 1, significa que el ADC ha terminado su conversión.
      \item s7: Se habilita la RAM y se almacena la conversión realizada por el ADC.
      \item s8: La RAM se deshabilita, y se incrementan los contadores de la ROM y la RAM.
-     \item s9: El sistema mantiene el valor de los contadores y verifica si el contador de la RAM ha llegado a 31. Si es cierto, pasa al estado S10; si no, vuelve al estado S1.
+     \item s9: El sistema mantiene el valor de los contadores y verifica si el contador de la RAM ha llegado a 31. Si es cierto, pasa al estado s10; si no, vuelve al estado s1.
      \item s10: Se reinician los contadores de la ROM y la RAM.
      \item s11: Se habilita el módulo de transmisión para comenzar a enviar datos.
      \item s12: La transmisión se deshabilita, y el sistema permanece en este estado hasta que la bandera \textit{end of transmission} (eotx) indique que se han enviado los 8 bits más significativos de la salida de la RAM. 
      \item s13: Se habilita nuevamente la transmisión, y el selector del multiplexor se pone a 1 para enviar los 8 bits menos significativos de la salida de la RAM.
      \item s14: La transmisión se desactiva, y el sistema espera hasta que se haya terminado de transmitir los bits menos significativos.
      \item s15: El contador de la RAM se incrementa para enviar el siguiente conjunto de datos.
-     \item s16: El sistema mantiene el valor del contador de la RAM y verifica si ha llegado a 31. Si es cierto, se regresa al estado S0 para repetir el proceso; de lo contrario, se vuelve al estado S11 para continuar la transmisión.           
+     \item s16: El sistema mantiene el valor del contador de la RAM y verifica si ha llegado a 31. Si es cierto, se regresa al estado s0 para repetir el proceso; de lo contrario, se vuelve al estado s11 para continuar la transmisión.           
     \end{enumerate}
 \end{itemize}
 
@@ -101,7 +101,7 @@ Los códigos de los módulos descritos anteriormente se encuentran en el \textbf
 Cuando se quiere trabajar con una matriz de $m \times n$ detectores, se deben emplear dos multiplexores: uno para direccionar las columnas y otro para las filas de la matriz. En este trabajo se utilizaron los multiplexores 74HC4051, cada uno con 8 entradas/salidas (Yn), una entrada/salida común (Z), tres entradas digitales de selección (S0-S2) y un pin de habilitación (E), activo en bajo. Estos multiplexores pueden alimentarse con un voltaje en el rango de $-5V$ a $+5V$.
 
 
-Al utilizar una matriz de detectores, es esencial comprender cómo los multiplexores afectan el circuito, ya que, al estar conectados a la matriz, influyen en el valor del voltaje que debe caer sobre el circuito de lectura. Para evaluar este impacto, se emplearon las cuatro resistencias seleccionadas como $R_{test}$, organizándolas en forma de matriz. Los multiplexores fueron alimentados mediante la tarjeta Basys 3, y se utilizaron los mismos códigos que en la caracterización de resistencias. No fue necesario desarrollar código adicional para controlar los multiplexores, ya que estos se operaron manualmente durante las pruebas.
+Al utilizar una matriz de detectores, es esencial comprender cómo los multiplexores afectan el circuito, ya que, al estar conectados a la matriz, influyen en el valor del voltaje que debe caer sobre el circuito de lectura. Para evaluar este impacto, se emplearon las cuatro resistencias seleccionadas como $R_{test}$, organizándolas en forma de matriz. Los multiplexores fueron alimentados con $3.3V$ mediante la tarjeta Basys 3, y se utilizaron los mismos códigos que en la caracterización de resistencias. No fue necesario desarrollar código adicional para controlar los multiplexores, ya que estos se operaron manualmente durante las pruebas.
 
 
 A continuación, se presenta la tabla de verdad del 74HC4051, que muestra cómo debe ser controlado.
@@ -114,7 +114,7 @@ A continuación, se presenta la tabla de verdad del 74HC4051, que muestra cómo 
                         \Body
                         \hline
                         \multicolumn{4}{ |c| }{Inputs}\\
-                        \overline{E} & S2 & S1 & S0 & Channel ON\\
+                        $\overline{E}$ & S2 & S1 & S0 & Channel ON\\
                         \hline
                         L & L & L & L & Y0 to Z\\
                         L & L & L & H & Y1 to Z\\
@@ -134,25 +134,85 @@ A continuación, se presenta la tabla de verdad del 74HC4051, que muestra cómo 
 
 
 \section{Caracterización de fotorresistencia}
-En esta segunda etapa, se llevó a cabo la caracterización de una fotorresistencia, cuyo comportamiento es similar al de un microbolómetro. Esta similitud permitió utilizar la fotorresistencia como un medio de prueba para anticipar el funcionamiento del sistema con un microbolómetro real. El objetivo de esta fase fue observar y analizar cómo sería trabajar con un microbolómetro, permitiendo ajustar y validar los métodos utilizados en el sistema de adquisición de datos.
+Se utilizó una fotorresistencia para tener una referencia clara de cómo sería trabajar con un microbolómetro real, debido a que ambos detectores comparten un comportamiento similar: en ausencia de luz, su resistencia aumenta, mientras que bajo iluminación, disminuye. En este caso, se empleó la fotorresistencia GL5537, que presenta una resistencia de $2M\Omega$ en oscuridad y un rango de $20K\Omega$ a $30K\Omega$ bajo luz, con un tiempo de respuesta de 20 ms.
 
+Primero, la fotorresistencia fue caracterizada bajo la iluminación de las lámparas de un salón. Posteriormente, se realizaron pruebas en condiciones controladas dentro de una caja oscura, midiendo su resistencia en ausencia de luz. Para simular diferentes niveles de iluminación, se incorporó un LED de 3W, cuya intensidad fue regulada mediante un PWM con cuatro ciclos de trabajo: $25\%$, $50\%$, $75\%$ y $100\%$.
 
-Para caracterizar la fotorresistencia, inicialmente se expuso a la iluminación de las lámparas de un salón. Sin embargo, debido a que el valor de la fotorresistencia no se estabilizaba, se optó por colocarla bajo condiciones "ideales". Para ello, la fotorresistencia se ubicó en una caja oscura, donde primero se midió su resistencia en ausencia de luz. Desafortunadamente, la resistencia aumentó tanto ($> 1M\Omega$) que el multímetro ya no pudo detectar su valor. Posteriormente, se decidió incorporar un LED de 3W, cuya intensidad se reguló utilizando un PWM. El LED se colocó en la parte superior de la caja, a 15cm de la fotorresistencia, permitiendo realizar mediciones bajo distintos condiciones controladas de luz.
-
-
-El diseño digital para la caracterización de la fotorresistencia es similar al utilizado en la caracterización de resistencia, la única diferencia entre los diseños es la incorporación de un módulo PWM. El diseño de este módulo se basa en el uso de contadores y comparadores. Los contadores generan una señal periódica, mientras que los comparadores determinan el momento en el que la señal cambia de estado, ajustando así el tiempo en el que el LED permanece encendido durante cada ciclo.
-
-
-El módulo PWM implementado cuenta con cuatro ciclos de trabajo: $25\%$, $50\%$, $75\%$ y $100\%$, lo que permite variar la intensidad del LED, además, de acuerdo con las especificaciones del LED, este se puede alimentar en un intervalo de voltaje de $3V - 3.8V$, por esta razón se optó por probar con tres voltajes de polarización distintos: $3V$, $3.3V$ y $3.5V$ y así determinar cual es el voltaje adecuado para polarizar al LED y qué ciclo de trabajo es mejor utilizar para una matriz de fotorresistencias. 
+El diseño digital empleado para esta caracterización es similar al utilizado en la caracterización de resistencias, con la diferencia de que se agregó un módulo PWM para controlar la iluminación y observar la respuesta de la fotorresistencia. 
 
 
 
 \section{Sistema de adquisición de datos}
-Para la etapa final del sistema de adquisición de datos completo, se diseñó una PCB que alberga una matriz de 8x8 fototransistores, la cual es clave para la obtención de imágenes. En este proceso, muchos de los módulos utilizados en las etapas anteriores, como los convertidores y multiplexores, se emplean nuevamente para garantizar una lectura precisa de la matriz y la conversión de las señales en datos útiles para generar la imagen. En esta sección, se explicará tanto el diseño de la PCB como el diseño digital involucrado en la adquisición y procesamiento de las imágenes obtenidas mediante la matriz de fototransistores.
+En esta etapa final, se desarrolló una PCB para una matriz de $8\times 8$ fototransistores, diseñada en Altium Designer, con el propósito de generar una imagen. En esta sección, se explicará primero el proceso de diseño de la matriz y, posteriormente, el diseño digital. Varios de los módulos implementados en etapas anteriores fueron reutilizados, junto con la incorporación de nuevos módulos para la obtención de imágenes.
 
 \subsection{Diseño de PCB}
-El diseño de la PCB fue realizado utilizando el software Altium Designer. Después de cotizar los gastos de fabricación, se decidió enviar la tarjeta a JLCPCB, debido a su costo competitivo. Por ello, se siguieron las normas de diseño que maneja JLCPCB para asegurar la compatibilidad durante el proceso de fabricación. Los fototransistores empleados en esta tarjeta son los ALS-PT19-315C, que son sensibles a la luz visible y se ajustan mejor a las necesidades del proyecto. Aunque inicialmente se consideraron las fotorresistencias, se descartaron porque, de acuerdo al datasheet, una fotorresistencia tiene un tiempo de respuesta de 20 ms, después de estar expuesta a 400-600 lux durante 2 horas, lo que resultaría en tiempos muy largos para obtener una imagen. En cambio, el fototransistor ofrece un tiempo de respuesta mucho más rápido, de solo 0.11 ms, lo que lo hace mucho más adecuado para generar imágenes en tiempo real.
+Antes de proceder con el diseño de la PCB, se realizó una búsqueda exhaustiva de detectores que pudieran ser adecuados para generar una imagen. Tras analizar varias opciones, se determinó que el fototransistor ALS-PT19-315C, un detector de luz visible, era el más apropiado, debido a su tiempo de respuesta. Además este sensor ha sido utilizado exitosamente en proyectos similares, lo que garantiza su fiabilidad en aplicaciones de imágenes. Otros factores que influyeron en su selección fueron su precio accesible y su amplia disponibilidad en stock. Adicionalmente, se decidió implementar una matriz de $8\times 8$ fototransistores, ya que este número coincide con las entradas/salidas disponibles en los multiplexores seleccionados. Con esta información se procedió al desarrollo de la PCB. 
 
-%\subsection{Diseño digital}
+
+La creación de la librería de esquemáticos fue el primer paso en el diseño de la PCB. En este caso, los únicos componentes que se incorporaron fueron los headers de $1\times 8$ y el fototransistor ALS-PT19-315C (Figura \ref{fig:sch_lib}), dado que estos elementos se emplean repetidamente en la matriz de $8\times 8$, no fue necesario agregar más componentes a la librería.
+
+
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.5\textwidth]{sch_lib}
+                \caption{Componentes de librería de esquemáticos: a) fototransistor, b) pines de $1\times 8$.}
+                \label{fig:sch_lib}
+            \end{figure}
+
+El segundo paso fue realizar el esquemático de la matriz, el cual se muestra en la Figura \ref{fig:sch_matrix}. En esta etapa, se realizaron las conexiones entre los componentes, asegurando que cada fototransistor y header estuvieran correctamente vinculados según el diseño de la matriz. Además, en este paso también se asignaron los nombres a las pistas de la PCB, lo que facilita la organización y el enrutamiento de las señales. Este proceso es crucial para asegurar que todos los componentes interactúen correctamente.
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.8\textwidth]{sch_matrix}
+                \caption{Esquemático de matriz de fototransistores.}
+                \label{fig:sch_matrix}
+            \end{figure}
+            
+El siguiente paso fue la generación de los pads de los componentes. Los pads en una PCB son áreas de contacto metálico diseñadas para permitir la conexión eléctrica y mecánica entre los componentes electrónicos y la propia placa. Para garantizar que los pads fueran precisos y compatibles con los componentes utilizados, se revisó el datasheet de cada uno. En este caso, los fototransistores utilizados son de tipo SMD (Surface Mounting Device), lo que requiere pads específicos para montaje superficial, mientras que los headers son THT (Through-Hole Technology), lo que implica la necesidad de pads con perforaciones para su montaje.
+
+
+Los pads del fototransistor se muestran en la siguiente imagen.
+
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.5\textwidth]{pad_als}
+                \caption{Pads de fototransistor ALS-PT19-315C.}
+                \label{fig:pad_als}
+            \end{figure}
+
+Las dimensiones de los pads, de acuerdo con el datasheet del fototransistor, están especificados en milímetros. En Altium Designer, se definió un tamaño de pad de $0.9 \times 0.9$ mm con un pitch (la distancia entre los centros de los pads) de 1.6 mm (Figura \ref{fig:pad_altium_als}). Es importante optar por la mayor dimensión indicada en el datasheet, tanto por seguridad ante posibles variaciones en el tamaño del componente como para asegurar una correcta distribución de la soldadura durante el montaje del componente.
+
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.65\textwidth]{pad_altium_als}
+                \caption{Pads de fototransistor ALS-PT19-315C realizados en Altium Designer.}
+                \label{fig:pad_altium_als}
+            \end{figure}
+
+Los pads para los headers de $1\times 8$ siguen dimensiones estandarizadas, lo que facilita su integración en diversos diseños de PCBs. El tamaño de los pads es de 1.2 mm, con un pitch de 2.54 mm (Figura \ref {fig:pad_altium_hdr}), estándar para la mayoría de los conectores de este tipo. Además, los headers $1\times 8$ tienen una longitud aproximada de 20 mm y un ancho de 3 mm.
+
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.4\textwidth]{pad_altium_hdr}
+                \caption{Pads de header $1 \times 8$ realizados en Altium Designer.}
+                \label{fig:pad_altium_hdr}
+            \end{figure}
+
+Finalmente, se procedió a dar forma a la PCB, organizando los componentes según las necesidades del diseño. Se optó por colocar cada fototransistor en un ángulo de 45°, formando una matriz cuadrada que optimiza el espacio y garantiza una disposición uniforme de los detectores. Para el diseño de la tarjeta, se establecieron varias reglas clave, definidas por el fabricante: el clearance (espacio entre pistas) fue de 2.54 mm, el ancho de las pistas de 0.3 mm, los agujeros con un diámetro mínimo de 0.254 mm y un máximo de 5 mm, y las vías con un diámetro externo de 0.6 mm y un diámetro interno de 0.3 mm. 
+
+
+Tras cotizar con varios proveedores, JLCPCB resultó ser la opción más conveniente en términos de precio y calidad. La PCB diseñada fue de 2 capas, con dimensiones de 40x40 mm, un grosor de 1.6 mm y fabricada en material FR-4.
+
+
+En la Figura \ref{fig:pcb_matrix}, se puede apreciar el diseño final de la PCB. Nótese que hay dos colores distintos en las pistas: las pistas de color rojo corresponden a las que pasan por la parte superior de la tarjeta, mientras que las de color azul representan las que pasan por la parte inferior. Esta distribución de las pistas en ambas caras de la tarjeta es la razón por la cual la PCB tiene 2 capas.
+
+
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.6\textwidth]{pcb_matrix}
+                \caption{Diseño de PCB para una matriz de fototransistores.}
+                \label{fig:pcb_matrix}
+            \end{figure}
+
+\subsection{Diseño digital}
 
 
