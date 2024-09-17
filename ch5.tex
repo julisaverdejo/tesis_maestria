@@ -12,7 +12,17 @@ En el ADC se utilizó el protocolo de lectura y escritura del SPI. De acuerdo al
 En las capturas del osciloscopio (Figura \ref{fig:ss_osc_adc_2v} y Figura \ref{fig:ss_osc_adc_3v}) se visualizan cuatro señales numeradas del 1 al 4. La señal 1 corresponde al comando de configuración del ADC, la señal 2 al reloj dclk, la señal 3 a la conversión realizada por el ADC, y la señal 4 al chip select (CS). Es importante destacar que las señales 1, 2, y 4 son generadas por los módulos diseñados e implementados en la FPGA, mientras que la señal 3 proviene directamente del ADC, mostrando el resultado de la conversión.
 
 
-Se realizaron dos pruebas para comprobar el funcionamiento del SPI. En la primera se conectó un potenciómetro al canal 0 del ADC y se configuró hasta obtener un voltaje de 2V. En la Figura \ref{fig:ss_osc_adc_2v} se muestra la conversión realizada por el dispositivo, evidenciando el funcionamiento del diseño del protocolo SPI y del ADC al realizar la conversión de la señal analógica a digital.
+Se realizaron dos pruebas para comprobar el funcionamiento del SPI. En la primera se conectó un potenciómetro al canal 0 del ADC y se configuró hasta obtener un voltaje de 2V. En la siguiente figura se puede observar la conexión.
+
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.6\textwidth]{adc_pot}
+                \caption{Arreglo de potenciómetro, ADC y tarjeta Basys 3.}
+                \label{fig:adc_pot}
+            \end{figure}
+
+
+ En la Figura \ref{fig:ss_osc_adc_2v} se muestra la conversión realizada por el dispositivo, evidenciando el funcionamiento del diseño del protocolo SPI y del ADC al realizar la conversión de la señal analógica a digital.
 
             \begin{figure}[hbtp]
                 \centering
@@ -44,7 +54,7 @@ En las Figuras \ref{fig:ss_osc_dac_2v} y \ref{fig:ss_osc_dac_3v} se muestran las
 Para verificar que el DAC realizara correctamente la conversión, se asignaron dos valores de voltaje en formato binario al MOSI: 1001 1011 0010, equivalente a 2V, y 1111 1111 1111, equivalente a 3.3V. Posteriormente, se midió el voltaje en el canal asignado utilizando un multímetro, confirmando que las conversiones fueron precisas.
 
 
-En las siguientes imágenes se muestran las capturas del osciloscopio correspondientes a la escritura del DAC, así como el resultado de la conversión de 2V y 3.3V, respectivamente.
+En las siguientes imágenes se muestran las capturas del osciloscopio correspondientes a la escritura del DAC, así como el resultado en el multímetro de la conversión de 2V y 3.3V, respectivamente.
 
             \begin{figure}[hbtp]
                 \centering
@@ -74,8 +84,76 @@ En las siguientes imágenes se muestran las capturas del osciloscopio correspond
                 \label{fig:dac_conversion_3v}
             \end{figure} 
                                  
-\section{Resultados de caracterización de resistencias}  
-Al trabajar con la matriz de resistencias y al integrar los multiplexores en el sistema, se observó que el valor de voltaje recibido era menor de lo esperado. Este comportamiento anómalo llevó a sospechar que los multiplexores estaban introduciendo una resistencia adicional que afectaba las mediciones. Para investigar el impacto de esta resistencia en los resultados, se optó por medir la resistencia interna de los multiplexores. Esta medición permitió cuantificar el efecto de los multiplexores sobre los valores de voltaje obtenidos y ajustar el diseño para minimizar el impacto de esta resistencia en las lecturas.
+\section{Resultados de caracterización de resistencias y multiplexores}  
+En esta sección se presentan los resultados combinados de la caracterización de las resistencias y de los multiplexores.
+
+
+Para la caracterización de las resistencias, cada una de las $R_{test}$ seleccionadas se colocó junto con la resistencia $R_{ref}$ en un protoboard. A través de un código en MATLAB, se adquirieron 10 veces los valores de las caídas de voltaje en $R_{ref}$ correspondientes a cada uno de los voltajes de polarización, posteriormente estos fueron promediados.
+
+
+En la siguiente imagen se muestra el arreglo descrito.
+
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.6\textwidth]{divisor_proto}
+                \caption{Arreglo de elementos para la caracterización de una resistencia.}
+                \label{fig:divisor_proto}
+            \end{figure} 
+
+Para la caracterización de los multiplexores, se colocaron las cuatro $R_{test}$ en forma de matriz en el protoboard, la resistencia de $1K\Omega$ se ubicó en la posición (1,1), la de $3.3K\Omega$ en la (1,2), la de $5.6K\Omega$ en la (2,1) y la de $10K\Omega$ en la (2,2). Los multiplexores se conectaron para controlar tanto las filas como las columnas de la matriz, y fueron operados de manera manual. La adquisición de los valores de las caídas de voltaje se realizó de manera idéntica a la utilizada en la caracterización de una resistencia, asegurando consistencia en el proceso de medición.
+
+
+El arreglo de la matriz de resistencias y multiplexores se muestra en la siguiente imagen.
+
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.6\textwidth]{matriz_resistencia}
+                \caption{Arreglo de elementos para la caracterización de multiplexores.}
+                \label{fig:matriz_resistencia}
+            \end{figure} 
+
+En las siguientes figuras se presentan las comparaciones de las curvas de los voltajes teóricos con los voltajes recibidos en MATLAB para cada una de las $R_{test}$, tanto con como sin multiplexores. Es notable que los multiplexores influyen en el resultado final debido a su resistencia interna, ya que cuando no se utilizan, el voltaje teórico y el voltaje recibido son muy similares. Para analizar con mayor detalle el efecto de los multiplexores, nos enfocaremos en los resultados obtenidos al polarizar el circuito con un voltaje de 3V.
+
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.9\textwidth]{01_1k}
+                \caption{Voltajes teóricos vs Voltajes recibidos para $R_{test} = 1K\Omega$.}
+                \label{fig:01_1k}
+            \end{figure}  
+\newpage
+En la imagen anterior, el voltaje teórico y el voltaje recibido sin multiplexor es de 2.72V, mientras que el voltaje agregando los multiplexores también es de 2.6952V.
+
+
+Para una resistencia de $3.3K\Omega$, se tiene que el valor de los voltajes teórico y sin multiplexores es de 2.2556V, y el voltaje con multiplexor igual a 2.2375V.
+            
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.9\textwidth]{02_3k3_new}
+                \caption{Voltajes teóricos vs Voltajes recibidos para $R_{test} = 3.3K\Omega$.}
+                \label{fig:02_3k3_new}
+            \end{figure}              
+
+Se tiene que los voltajes teórico y el de una resistencia de $5.6K\Omega$ es 1.92V, cuando se conectan los multiplexores, se registró un voltaje de 1.90V.
+ 
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.9\textwidth]{03_5k6_new}
+                \caption{Voltajes teóricos vs Voltajes recibidos para $R_{test} = 5.6K\Omega$.}
+                \label{fig:03_5k6_new}
+            \end{figure}   
+\newpage
+Finalmente, para una resistencia de $10K\Omega$, el voltaje teórico y el voltaje recibido es de 1.5V, y el voltaje con multiplexor de 1.49V.
+
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.9\textwidth]{04_10k_new}
+                \caption{Voltajes teóricos vs Voltajes recibidos para $R_{test} = 10K\Omega$.}
+                \label{fig:04_10k_new}
+            \end{figure}  
+
+La resistencia interna de los multiplexores, fue medida con un multímetro, manteniendo el voltaje de polarización del circuito fijo en 3V. En la siguiente tabla se muestran los valores obtenidos de las resistencias internas de los multiplexores.
+
+               
             \begin{table}[htbp]
                 \caption{Resistencia de multiplexores.}
                 \begin{center}
@@ -97,41 +175,28 @@ Al trabajar con la matriz de resistencias y al integrar los multiplexores en el 
                 \end{center}
             \end{table}
 
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=1\textwidth]{01_1k}
-                \caption{Influencia de resistencia de multiplexores.}
-                \label{fig:01_1k}
-            \end{figure}  
-            
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=1\textwidth]{02_3k3_new}
-                \caption{Influencia de resistencia de multiplexores.}
-                \label{fig:02_3k3_new}
-            \end{figure}              
+De acuerdo con el datasheet, las resistencias de cada una de las entradas/salidas Yn varían. Según los datos presentados en la tabla, la resistencia interna de los multiplexores se encuentra en un rango de 130 a 160 $\Omega$. 
  
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=1\textwidth]{03_5k6_new}
-                \caption{Influencia de resistencia de multiplexores.}
-                \label{fig:03_5k6_new}
-            \end{figure}   
-
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=1\textwidth]{04_10k_new}
-                \caption{Influencia de resistencia de multiplexores.}
-                \label{fig:04_10k_new}
-            \end{figure}  
-                
                      
-\section{Resultados de caracterización de fotorresistencias}
+\section{Resultados de caracterización de fotorresistencia}
+Para caracterizar la fotorresistencia, inicialmente se expuso a la iluminación de una lámpara de un salón, pero el valor de la resistencia no lograba estabilizarse. Posteriormente, se intentó medir la fotoresistencia en oscuridad, pero esta superaba los $5M\Omega$, lo que impedía que el multímetro detectara su valor y que esta pudiera ser caracterizada, debido a que, al ser una resistencia muy grande, la caída de voltaje en el circuito de lectura sería tan pequeña que el ADC no podría convertir. Por lo tanto, se optó por colocar la fotorresistencia en condiciones ideales y controladas, dentro de una caja oscura, y variando la intensidad de un LED de 3W mediante un PWM con distintos duty cycles. De esta forma, se obtuvieron valores de resistencia adecuados para su caracterización.
 
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.4\textwidth]{fotores_box}
+                \caption{Arreglo de fotoresistencia para su caracterización.}
+                \label{fig:fotores_box}
+            \end{figure}
+
+Antes de caracterizar la fotorresistencia bajo condiciones ideales, fue necesario definir el voltaje adecuado para alimentar el LED de 3W, ya que el brillo del LED varía en función del voltaje aplicado. Inicialmente, el LED se alimentó con 3V, variando el duty cycle del PWM y midiendo la resistencia de la fotorresistencia en cada caso. Posteriormente, el proceso se repitió alimentando el LED con 3.3V y, finalmente, con 3.5V. Estas mediciones permitieron observar cómo el voltaje de alimentación del LED influye en la respuesta de la fotorresistencia.
+
+
+En la siguiente tabla se muestran los valores de la fotorresistencias bajo distintos voltajes de polarización y duty cycles.
+\newpage
             \begin{table}[htbp]
                 \caption{Valor de fotorresistencias con diferentes duty cycles.}
                 \begin{center}
-                    \resizebox{0.6\linewidth}{!}{ 
+                    \resizebox{0.5\linewidth}{!}{ 
                     \begin{NiceTabular}{| c | c | c |}
                         \CodeBefore
                         \Body
@@ -142,9 +207,9 @@ Al trabajar con la matriz de resistencias y al integrar los multiplexores en el 
                                 & 50  & 104 - 105.7\\
                                 & 75  & 70 -71\\
                                 & 100 & 53 - 54\\ \hline
-                        3.3 V   & 25  & 29 - 31\\
-                                & 50  & 16 - 17\\
-                                & 75  & 11 - 12\\
+                        3.3 V   & 25  & 24 - 31\\
+                                & 50  & 15 - 18\\
+                                & 75  & 10 - 12\\
                                 & 100 & 8 - 9\\ \hline
                         3.5 V   & 25  & 6 - 7\\
                                 & 50  & 3.6\\
@@ -157,21 +222,14 @@ Al trabajar con la matriz de resistencias y al integrar los multiplexores en el 
                 \end{center}
             \end{table}
 
+Dado que con un voltaje de polarización de 3.3V se obtuvieron valores de resistencia más adecuados para la caracterización de la fotorresistencia, y que esta presentó diferentes valores a distintos duty cycles, se optó por alimentar el LED con ese voltaje. Esto permitió una mejor evaluación del comportamiento de la fotorresistencia bajo condiciones controladas de iluminación.
 
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=0.6\textwidth]{settling_3v}
-                \caption{Captura de osciloscopio de settling time.}
-                \label{fig:settling_3v}
-            \end{figure}
-            
-            \begin{figure}[hbtp]
-                \centering
-                \includegraphics[width=0.6\textwidth]{settling_0v1}
-                \caption{Captura de osciloscopio de settling time.}
-                \label{fig:settling_0v1}
-            \end{figure} 
-            
+
+El circuito de lectura utilizado para la caracterización de la fotorresistencia fue nuevamente una resistencia de $10K\Omega$. El diseño digital empleado para esta caracterización es el mismo que se utilizó en las etapas anteriores.
+
+
+En la siguiente imagen se muestran las curvas de voltaje de la fotorresistencia a diferentes duty cycles. 
+%\newpage            
             \begin{figure}[hbtp]
                 \centering
                 \includegraphics[width=1\textwidth]{respuesta_luminica}
@@ -179,16 +237,34 @@ Al trabajar con la matriz de resistencias y al integrar los multiplexores en el 
                 \label{fig:respuesta_luminica}
             \end{figure}            
             
-            
+Usando la ecuación del divisor de voltaje, se determinó que los valores obtenidos de la fotorresistencia coinciden con los presentados en la Tabla \ref{tab:Duty_cycle}. Además, en la imagen se puede observar que, a mayor iluminación, la fotorresistencia presenta un comportamiento más lineal.            
 
-\section{Imágenes obtenidas}
+\section{Resultados de las imágenes obtenidas}
+De acuerdo al datasheet de la fotorresistencia, su tiempo de respuesta es de 20 ms después de haber sido expuesta a la luz durante 2 horas. Debido a este comportamiento, no se pudo generar una imagen con estos elementos, ya que el tiempo necesario para obtenerla sería demasiado extenso. Por este motivo, se optó por utilizar fototransistores, que ofrecen un tiempo de respuesta mucho más rápido y adecuado para la captura de imágenes en menos tiempo.
 
+
+Para obtener imágenes utilizando la matriz de 8x8 fototransistores, se propusieron las máscaras mostradas en la Figura \ref{fig:mask_final}.
             \begin{figure}[hbtp]
                 \centering
                 \includegraphics[width=0.8\textwidth]{mask_final}
-                \caption{Máscaras aplicadas a matriz de fototransistores.}
+                \caption{Máscaras propuestas.}
                 \label{fig:mask_final}
             \end{figure}  
+
+Cada una de estas máscaras fue colocada encima de la matriz, que fue iluminada con el LED de un celular situado a 20 cm de distancia. Las variaciones de voltaje del circuito de lectura fueron adquiridas y procesadas en MATLAB.
+
+            \begin{figure}[hbtp]
+                \centering
+                \includegraphics[width=0.4\textwidth]{matrix_mask}
+                \caption{Máscara triangular colocada encima de la matriz de fototransistores.}
+                \label{fig:matrix_mask}
+            \end{figure} 
+\newpage
+En la Figura \ref{fig:result_mask} se muestran las imágenes obtenidas al colocar cada una de las máscaras sobre la matriz de 8$\times$8 fototransistores. 
+
+
+El diseño del sistema de adquisición de datos y la PCB funcionaron con éxito, permitiendo generar imágenes que son muy similares a las formas de las máscaras utilizadas. Esto demuestra la efectividad del sistema para capturar y reproducir las variaciones de luz.
+
 
             \begin{figure}[hbtp]
                 \centering
