@@ -1,10 +1,18 @@
 \chapter{Introducción}
-Los sistemas de adquisición de datos juegan un papel importante en una amplia variedad de campos, debido a que la precisión y el control de datos son esenciales para el avance tecnológico.
 
-Estos sistemas permiten capturar, procesar y analizar señales provenientes de sensores y dispositivos, siendo indispensables en áreas como la automatización industrial, la investigación científica y el control de procesos. Ya sea para monitorear variables como temperatura, presión o voltaje, o incluso para obtener imágenes detalladas de detectores infrarrojos en cámaras térmicas y dispositivos de visión nocturna, los sistemas de adquisición de datos se destacan por su capacidad de registrar información de forma precisa y eficiente. 
+Los sistemas de adquisición de datos (DAQs) son un conjunto de herramientas utilizadas para recopilar, procesar y analizar datos de fenómenos físicos. Los elementos básicos de un sistema de adquisición de datos incluyen sensores que capturan señales físicas, hardware de acondicionamiento de señales para procesar las salidas de los sensores, y una computadora que ejecuta software para adquirir y registrar los datos. 
 
 
-Los detectores infrarrojos tienen múltiples aplicaciones, que van desde la seguridad y vigilancia en hogares \cite{Yii2023} hasta el ámbito médico, donde se utiliza para el diagnóstico de enfermedades como el cáncer de mama, diabetes \cite{LeneroBardallo2022} y patologías dermatológicas \cite{She2024}. También se emplean en la detección de gestos para dispositivos inteligentes \cite{LeBa2019} y en aplicaciones espaciales, como el monitoreo de las emisiones de dióxido de carbono en la atmósfera provocadas por la actividad humana \cite{Minoglou2019}. En la agricultura, para identificar las zonas del campo que sufren estrés hídrico o exceso de riego, lo que permite una mejor gestión del agua \cite{Parihar2021}. Los detectores infrarrojos permiten capturar radiación que no es visible al ojo humano y la transforman en señales eléctricas que pueden ser medidas. Desarrollar un sistema de adquisición de datos para obtener imágenes infrarrojas es crucial, ya que estos sistemas interpretan las señales generadas por los detectores y las convierten en una imagen visible, proporcionando información valiosa sobre la distribución de la temperatura en una escena.
+El concepto de adquisición de datos se remonta a tiempos antiguos, cuando los seres humanos comenzaron a observar y registrar eventos naturales, como el movimiento de los cuerpos celestes, los cambios en el clima y el paso del tiempo. Las primeras civilizaciones desarrollaron métodos para la recolección de datos, como calendarios, instrumentos mecánicos, como el reloj solar, y libros de registros. Con la llegada de dispositivos analógicos y digitales, la adquisición de datos se hizo cada vez más sistemática y automatizada.
+
+
+Algunos ejemplos de los sistemas de adquisición de datos aplicados en distintos sectores son: Estaciones meteorológicas, utilizan DAQs para monitorear parámetros ambientales como la temperatura, la humedad, la velocidad del viento y la presión atmosférica. Estos sistemas suelen incluir sensores como termómetros, higrómetros y anemómetros, los datos se procesan y registran en ordenadores para hacer un seguimiento de los cambios climáticos. En la medicina, los electrocardiógrafos son un tipo de DAQs, miden la actividad eléctrica del corazón, procesan las señales y las muestran en forma de ondas en una pantalla. En la industria automotriz, durante la fase de desarrollo de los vehículos, los DAQs monitorean parámetros como el rendimiento del motor, la eficiencia del combustible y las emisiones de gases para garantizar el cumplimiento en los estándares de calidad y seguridad.
+
+
+El uso de DAQs para la creación de imágenes con detectores infrarrojos, tiene múltiples aplicaciones, que van desde la seguridad y vigilancia en hogares \cite{Yii2023} hasta el ámbito médico, donde se utilizan para el diagnóstico de enfermedades como el cáncer de mama, diabetes \cite{LeneroBardallo2022} y patologías dermatológicas \cite{She2024}. También se emplean en la detección de gestos para dispositivos inteligentes \cite{LeBa2019} y en aplicaciones espaciales, como el monitoreo de las emisiones de dióxido de carbono en la atmósfera provocadas por la actividad humana \cite{Minoglou2019}. En la agricultura, para identificar las zonas del campo que sufren estrés hídrico o exceso de riego, lo que permite una mejor gestión del agua \cite{Parihar2021}.
+
+
+Los detectores infrarrojos permiten capturar radiación que no es visible al ojo humano y la transforman en señales eléctricas que pueden ser medidas. Desarrollar un sistema de adquisición de datos para obtener imágenes infrarrojas es crucial, ya que estos sistemas interpretan las señales generadas por los detectores y las convierten en una imagen visible, proporcionando información valiosa sobre la distribución de la temperatura en una escena.
 
 
 Debido a la importancia de los sistemas de adquisición de datos en aplicaciones que utilizan detectores infrarrojos, es fundamental comprender el comportamiento de estos detectores. Conocer cómo responden a diferentes condiciones de luz y temperatura permite diseñar sistemas más eficientes y precisos para capturar imágenes térmicas.
@@ -166,9 +174,47 @@ Si son polarizados con corriente, el cambio de la resistencia se puede detectar 
 
 Los detectores ferroeléctricos operan bajo el mismo principio que los piroeléctricos, pero con la diferencia de que el efecto se produce mediante un campo eléctrico \cite{Rogalski}, \cite{BlancoMDA}.
 
-		
-En los últimos años, ha habido un creciente interés en el uso de microbolómetros para generar imágenes infrarrojas, superando a otros tipos de sensores en diversas aplicaciones, incluyendo el área médica. Este interés se debe, en parte, a las dimensiones reducidas de los microbolómetros, que pueden ser menores a $12 \mu m$, lo que permite una mayor densidad de píxeles en el sensor. Además, mientras que la resolución de algunos sensores infrarrojos está limitada a un arreglo de $120 \times 84$ píxeles, los microbolómetros pueden alcanzar resoluciones mucho más altas, como $1280 \times 1024$ o más, obteniendo imágenes más detalladas y nítidas. En el ámbito médico, los microbolómetros se han utilizado para detectar la temperatura corporal \cite{Svantner2022} y, de manera innovadora, en el diagnóstico de la diabetes, capturando imágenes térmicas de la lengua \cite{WziatekKuczmik2024} o del pie \cite{Rocha2022} para identificar variaciones térmicas que pueden indicar problemas de salud. Estas capacidades hacen de los microbolómetros una opción preferida en tecnologías de imágenes térmicas de alta precisión.
-		 					          
+
+En los últimos años, ha habido un creciente interés en el uso de microbolómetros para generar imágenes infrarrojas. En el ámbito médico, se han utilizado para medir la temperatura corporal \cite{Svantner2022} y, de manera innovadora, en el diagnóstico de la diabetes, mediante la captura de imágenes térmicas de la lengua \cite{WziatekKuczmik2024} o del pie \cite{Rocha2022}, permitiendo identificar variaciones térmicas que pueden indicar problemas de salud. Otra aplicación importante es en cámaras instaladas en vehículos, donde los microbolómetros se emplean para detectar personas o mascotas una vez detenido el vehículo, ayudando a prevenir accidentes ocasionados por quedar atrapados dentro \cite{Farhat2011}.
+
+
+Este creciente interés se debe, en parte, a su bajo costo, peso ligero y dimensiones reducidas, que pueden ser menores a 12 $\mu$m, lo que permite una mayor cantidad de pixeles en un arreglo. Además, mientras que algunos sensores infrarrojos están limitados a resoluciones de 120$\times$84 pixeles, los microbolómetros pueden alcanzar resoluciones mucho más altas, como 1280$\times$1024 o más, obteniendo imágenes más detalladas y nítidas. Estas ventajas hacen de los microbolómetros una opción preferida en tecnologías de imágenes térmicas de alta precisión. Por este motivo, en este trabajo se desarrollará un sistema de adquisición de datos modular, que puede ser utilizado con un microbolómetro. En la siguiente tabla se presentan trabajos similares.
+
+            \begin{table}[htbp]
+                \caption{Resumen de trabajos relacionados son sistemas de lectura para detectores.}
+                \begin{center}
+                    \resizebox{1\linewidth}{!}{ 
+                    \begin{NiceTabular}{|c|c|c|c|c|c|}
+                        \CodeBefore
+                        \Body
+                        \hline
+                        \textbf{Artículo} & \textbf{Dispositivo de implementación} & \textbf{Tecnología de detección} & \textbf{Sistema configurable} & \textbf{Interfaz gráfica} & \textbf{Arreglo máximo de detectores} \\
+                        \hline
+                        \multirow{2}{*}{\cite{Farhat2011}} & \multirow{2}{*}{TSK3000 Microcontrolador incluido en FPGA Altera company} & \multirow{2}{*}{Microbolómetro no refrigerado de Silicio-amorfo (a-Si)} & \multirow{2}{*}{No} & \multirow{2}{*}{Integrada} & \multirow{2}{*}{168x120} \\&  &  &  &  &  \\
+                        \hline
+                        \multirow{2}{*}{\cite{Sosnowski2010}} & \multirow{2}{*}{FPGA EPC2C35F672 de Altera company} & \multirow{2}{*}{UL 03 04 (comercial) Microbolómetro de Silicio-amorfo (a-Si)} & \multirow{2}{*}{No} & \multirow{2}{*}{No} & \multirow{2}{*}{384x288} \\&  &  &  &  &  \\
+                        \hline
+                        \multirow{2}{*}{\cite{Forsberg2015}} & \multirow{2}{*}{FPGA EPC3C40 de Altera company} & \multirow{2}{*}{Microbolómetro con pozo cuántico de Silicio (Si), Silicio-germanio (SiGe)} & \multirow{2}{*}{No} & \multirow{2}{*}{Sí} & \multirow{2}{*}{384x288} \\&  &  &  &  &  \\
+                        \hline
+                        \multirow{2}{*}{\cite{Vybornov2020}} & \multirow{2}{*}{Microcontrolador Cortex M3 STM32F103} & \multirow{2}{*}{Bolómetro en sustrato de Óxido de aluminio (Al2O3), Silicio (Si)} & \multirow{2}{*}{No} & \multirow{2}{*}{No} & \multirow{2}{*}{1x1} \\&  &  &  &  &  \\
+                        \hline
+                        \multirow{2}{*}{\cite{Xie2016}} & \multirow{2}{*}{FPGA Cyclone IV EP4CE55 de Altera company} & \multirow{2}{*}{GWR1020 IRFPA de Óxido de vanadio (VOx)} & \multirow{2}{*}{No} & \multirow{2}{*}{No} & \multirow{2}{*}{384x288} \\&  &  &  &  &  \\
+                        \hline
+                        \multirow{2}{*}{\cite{Feng2020}} & \multirow{2}{*}{DSP TMS320DM6467} & \multirow{2}{*}{Microbolómetro UL04371 (comercial)} & \multirow{2}{*}{No} & \multirow{2}{*}{No} & \multirow{2}{*}{160x120} \\&  &  &  &  &  \\
+                        \hline
+                        \multirow{2}{*}{\cite{Bayareh2018}} & \multirow{2}{*}{Raspberry Pi 2} & \multirow{2}{*}{Lepton FLIR 2.5 (comercial): Microbolómetro de VOx no refrigerado} & \multirow{2}{*}{No} & \multirow{2}{*}{Si} & \multirow{2}{*}{80x60} \\&  &  &  &  &  \\
+                        \hline
+                        \multirow{2}{*}{\cite{LeneroBardallo2022}} & \multirow{2}{*}{Raspberry Pi 3 B+} & \multirow{2}{*}{Lepton FLIR (comercial): Microbolómetro de VOx no refrigerado} & \multirow{2}{*}{No} & \multirow{2}{*}{No} & \multirow{2}{*}{160x120} \\&  &  &  &  &  \\
+                        \hline
+                        \multirow{2}{*}{\cite{Rocha2022}} & \multirow{2}{*}{Raspberry Pi} & \multirow{2}{*}{Lepton FLIR 2.5 (comercial): Microbolómetro de VOx no refrigerado} & \multirow{2}{*}{No} & \multirow{2}{*}{No} & \multirow{2}{*}{80x60} \\&  &  &  &  &  \\
+                        \hline
+                        \multirow{2}{*}{\cite{Javaid2020}} & \multirow{2}{*}{DROIC} & \multirow{2}{*}{Infrared pixel array} & \multirow{2}{*}{Si} & \multirow{2}{*}{Si} & \multirow{2}{*}{1024x1024} \\&  &  &  &  &  \\
+                        \hline
+                    \end{NiceTabular}
+                    }
+                \label{tab:Div_IR}
+                \end{center}
+            \end{table}	 					          
 		
     \section{Objetivos}
 	
@@ -179,10 +225,10 @@ En los últimos años, ha habido un creciente interés en el uso de microbolóme
 		
 		\subsection{Objetivos específicos}
 			\begin{itemize}
-                \item Obtención de especificaciones para el sistema de adquisición de datos.
-                \item Selección de ADC y DAC y protocolo de comunicación a partir de las especificaciones.
-                \item Diseño de un firmware en el lenguaje de descripción de hardware (HDL) Verilog para el protocolo de comunicación SPI reconfigurable y robusto.
-                \item Implementación de protocolo SPI para control de un ADC y un DAC de 12 bits.
-                \item Pruebas experimentales y de estrés para verificación de robustes del diseño y mejora.
-                \item Adquisición de los datos utilizando una terminal de usuario basada en UART.
+                \item Analizar las propiedades físicas y características de los microbolómetros, así como su funcionamiento y sus diferentes circuitos de lectura con el fin de fundamentar las decisiones en el diseño del sistema.
+                \item Estudiar las máquinas de estado finito (FSM) de tipo Moore y Mealy, los tipos de codificación en Verilog y las técnicas de diseño, con el fin de aplicar este conocimiento en la implementación y optimización del sistema de adquisición y procesamiento de datos.
+                \item Diseñar un firmware en el lenguaje Verilog para implementar los protocolos de comunicación SPI y UART reconfigurables y robustos, que permitan adaptabilidad y confiabilidad en aplicaciones de adquisición de datos y control.
+                \item Seleccionar los convertidores analógico-digital (ADC) y digital-analógico (DAC) más adecuados para el sistema de adquisición de datos y probarlos utilizando el firmware previamente diseñado.
+                \item Diseñar una PCB con una matriz de 8x8 fototransistores que funcione como banco de prueba para validar el funcionamiento del sistema de adquisición de datos.
+                \item Integrar los convertidores ADC y DAC, multiplexores, y la matriz de fototransistores en un sistema unificado para realizar pruebas y validar su capacidad de adquirir y procesar imágenes de manera eficiente.
 			\end{itemize}

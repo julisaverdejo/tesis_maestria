@@ -3,26 +3,33 @@
     \section{Códigos en MATLAB}
 
      \lstinputlisting[style = MATLAB, caption =  Comunicación RS232, label = cod:com_matlab]{codigos/matlab/test.m}
+     
+     \lstinputlisting[style = MATLAB, caption =  Adquisición de datos, label = cod:com_matlab]{codigos/matlab/data_acquisition_system.m}     
 
+     \lstinputlisting[style = MATLAB, caption =  Adquisición de datos para matriz de fototransistores, label = cod:com_matlab]{codigos/matlab/final.m}    
+
+     \lstinputlisting[style = MATLAB, caption =  Generación de imagen, label = cod:com_matlab]{codigos/matlab/image.m}    
+      \newpage	
 	\section{Códigos de Verilog}
-	
+
 	  \subsection{Debouncer}
 	  
 	  \lstinputlisting[style = VERILOG, caption =  Debouncer IP., label = cod:debouncer_ip]{codigos/debouncer_ip/rtl/debouncer_ip.v}
-	
+      
 	  \subsection{Controlador UART}
 	
-	\newpage
+%	\newpage
     \lstinputlisting[style = VERILOG, caption =  Generador de la tasa de baudios., label = cod:baud_gen]{codigos/uart_ip/rtl/baud_gen.v}
     
-    \newpage
+%    \newpage
     \lstinputlisting[style = VERILOG, caption =  UART RX., label = cod:uart_rx]{codigos/uart_ip/rtl/uart_rx.v}
     
-    \newpage
+%    \newpage
     \lstinputlisting[style = VERILOG, caption = UART TX., label = cod:uart_tx]{codigos/uart_ip/rtl/uart_tx.v}
     
-    \newpage
+%    \newpage
     \lstinputlisting[style = VERILOG, caption = UART IP., label = cod:uart_ip]{codigos/uart_ip/rtl/uart_ip.v}
+
 
     \newpage
 	  \subsection{Controlador SPI}
@@ -75,7 +82,7 @@
     \lstinputlisting[style = VERILOG, caption = SPI ADC IP., label = cod:spi_write_read]{codigos/spi_adc_ip/rtl/spi_write_read.v}	  
     
 	\newpage 
-	  \subsubsection{Códigos de caracterización de resistencias}	  
+	  \subsubsection{Códigos de caracterización de resistencias y multiplexores}	  
 	  
     \lstinputlisting[style = VERILOG, caption =  Memoria ROM., label = cod:rom_volts]{codigos/dac_adc_tx_ip/rtl/rom_volts.v}
 
@@ -96,3 +103,13 @@
 	  \subsubsection{Códigos de caracterización de una fotoresistencia}	
 	        
     \lstinputlisting[style = VERILOG, caption =  Módulo PWM con diferentes duty cycles., label = cod:dac_adc_tx]{codigos/pwm_ip/rtl/counter_pwm.v}	 	  
+    
+	  \subsubsection{Códigos del sistema de adquisición para generar una imagen}	
+	  
+    \lstinputlisting[style = VERILOG, caption =  Contador de carrera libre., label = cod:rom_volts]{codigos/counter_ip/rtl/counter_ip.v}
+
+    \lstinputlisting[style = VERILOG, caption =  Contador programable., label = cod:ram_volts]{codigos/pixel_matrix/vivado/vivado.srcs/sources_1/new/count_time_mux.v}
+    
+    \lstinputlisting[style = VERILOG, caption = Máquina de estados para matriz de fototransistores., label = cod:counter_volts]{codigos/pixel_matrix/vivado/vivado.srcs/sources_1/new/fsm_pixel.v}
+
+    \lstinputlisting[style = VERILOG, caption = Módulo principal de la matriz de pixeles., label = cod:counter_address]{codigos/pixel_matrix/vivado/vivado.srcs/sources_1/new/top.v}	      
