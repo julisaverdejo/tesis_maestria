@@ -154,13 +154,10 @@ Esta topología está diseñada para medir la tensión en la salida de un diviso
 
 La tensión de salida se expresa con la siguiente ecuación:
         \begin{equation}
-        V_{out} =\frac{V_{bias}}{R_{ref} + (R_{bol} - \Delta R)} = V_{0} - \Delta V_{out}
+        V_{out} =\frac{V_{bias}}{R_{ref} + R_{bol}} = V_{0} - \Delta V_{out}
         \label{eq:Divisor}
         \end{equation} 
 Donde:
-
-
-$\Delta R$ - Variación de la resistencia debido a la radiación incidente.
 
 
 $V_{0}$ - Valor de la tensión de salida en equilibrio térmico (sin radiación incidente)
@@ -182,9 +179,9 @@ La parte superior de cada rama está compuesta por una resistencia de referencia
                 \label{fig:wheatstone}
             \end{figure}
 
-En el análisis de la tensión de salida, las resistencias de referencia tienen un valor nominal de $R_{Ref}$ a temperatura ambiente. De manera similar, tanto el microbolómetro sensor como el microbolómetro aislado se consideran como resistencias, con valores resistivos a temperatura ambiente $R_{0}$ y $\Delta R$, respectivamente, para las variaciones en resistencia del microbolómetro causadas por la potencia infrarroja incidente. Por lo tanto, la tensión de salida es \cite{BlancoMDA}
+La tensión de salida es
         \begin{equation}
-        V_{out} =\left(\frac{V_{bias}}{R_{Ref} + (R_{bol} - \Delta R)}(R_{0} - \Delta R)- \frac{V_{bias}}{R_{Ref}+ R_{0}}R_{0} \right)
+        V_{out} =\left(\frac{V_{bias}}{R_{Ref_1} + R_{Bol}}R_{Bol} - \frac{V_{bias}}{R_{Ref_2}+ R_{Ref}}R_{Ref} \right)
         \label{eq:Puente}
         \end{equation} 
 
